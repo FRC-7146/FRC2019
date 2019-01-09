@@ -14,7 +14,6 @@ public class AutoAlignCommand extends CmdGroupBase {
 
 	public AutoAlignCommand() {
 		super("Auto Align", 100);
-
 	}
 
 	@Override

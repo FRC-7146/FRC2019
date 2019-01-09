@@ -36,8 +36,15 @@ public class ManualControlCommand extends CmdGroupBase {
 		}
 
 		double yIn = js.getY(), xIn = js.getX(), zIn = js.getZ(), povIn = js.getPOV();
-		Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
+		if (povIn % 10 != 0)
+			Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
+		else
+			Robot.mChasisDriveSubsystem.pidTurn(povIn);
 		SmartDashboard.putString("Mobility Mode", RobotMap.MOTOR.CURRENT_MODE.toString());
+		SmartDashboard.putNumber("Y in", yIn);
+		SmartDashboard.putNumber("X in", xIn);
+		SmartDashboard.putNumber("Z in", zIn);
+		SmartDashboard.putNumber("POV in", povIn);
 	}
 
 	@Override
