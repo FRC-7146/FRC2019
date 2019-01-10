@@ -93,6 +93,9 @@ public class StatusSubsystem extends Subsystem {
 		Thread t = new Thread(() -> {
 			Mat frame = new Mat();
 			Mat dst = new Mat();
+			Point points[] = new Point[4];
+			MatOfPoint2f cnt1 = new MatOfPoint2f(), cnt2 = new MatOfPoint2f();
+			int iteration = 0;
 			while (!Thread.interrupted()) {
 				try {
 					if (0 == cvSink.grabFrame(frame)) {
@@ -122,16 +125,20 @@ public class StatusSubsystem extends Subsystem {
 								maxContours.add(maxContour);
 								contours.remove(maxContour);
 							}
+							if (!contours.isEmpty())
+								contours.forEach((MatOfPoint c) -> {
+									c.release();
+								});
 							Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
 
-							MatOfPoint2f cnt1 = new MatOfPoint2f(), cnt2 = new MatOfPoint2f();
 							maxContours.get(0).convertTo(cnt1, CvType.CV_32F);
 							maxContours.get(1).convertTo(cnt2, CvType.CV_32F);
 							RotatedRect rec1 = Imgproc.minAreaRect(cnt1);
 							RotatedRect rec2 = Imgproc.minAreaRect(cnt2);
-
-							Point points[] = new Point[4];
-
+							if (!maxContours.isEmpty())
+								maxContours.forEach((MatOfPoint c) -> {
+									c.release();
+								});
 							rec1.points(points);
 							for (int i = 0; i < 4; ++i) {
 								Imgproc.line(frame, points[i], points[(i + 1) % 4], new Scalar(0, 0, 0), 1);
@@ -142,9 +149,12 @@ public class StatusSubsystem extends Subsystem {
 							}
 
 						}
-
 						cvSrcOut.putFrame(frame);
 						cvSrcMask.putFrame(dst);
+						if (iteration++ > 1000) {
+							System.gc();
+							iteration = 0;
+						}
 					}
 				} catch (Exception e) {
 					logger.warning("Error in CV Thread:");
