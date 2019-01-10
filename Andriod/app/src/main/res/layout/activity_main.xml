@@ -50,7 +50,7 @@
         android:id="@+id/toggleButtonCapture"
         android:layout_width="57dp"
         android:layout_height="45dp"
-        android:layout_marginStart="88dp"
+        android:layout_marginStart="92dp"
         android:text="ToggleButton"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
@@ -156,6 +156,40 @@
         android:max="359"
         app:layout_constraintStart_toEndOf="@+id/HV"
         app:layout_constraintTop_toBottomOf="@+id/highS" />
+
+    <EditText
+        android:id="@+id/roborioIPText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="Enter Roborio IP Address"
+        android:ems="10"
+        android:hint="Enter Roborio IP Address"
+        android:inputType="text"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="@+id/LV"
+        app:layout_constraintTop_toBottomOf="@+id/lowV" />
+
+    <EditText
+        android:id="@+id/modeText"
+        android:layout_width="48dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="mode number"
+        android:ems="10"
+        android:hint="mode number"
+        android:inputType="number"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:text="0"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/toggleButtonCapture"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView"
+        tools:text="0" />
 
 
 </android.support.constraint.ConstraintLayout>
