@@ -18,8 +18,12 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         highH = (SeekBar) findViewById(R.id.highH);
-        highH.setProgress((int)GreenHSVHigh.val[0]);
+        highH.setProgress((int) GreenHSVHigh.val[0]);
         highH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         });
         highS = (SeekBar) findViewById(R.id.highS);
-        highS.setProgress((int)GreenHSVHigh.val[1]);
+        highS.setProgress((int) GreenHSVHigh.val[1]);
         highS.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -97,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         });
         highV = (SeekBar) findViewById(R.id.highV);
-        highV.setProgress((int)GreenHSVHigh.val[2]);
+        highV.setProgress((int) GreenHSVHigh.val[2]);
         highV.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         });
 
         lowH = (SeekBar) findViewById(R.id.lowH);
-        lowH.setProgress((int)GreenHSVLow.val[0]);
+        lowH.setProgress((int) GreenHSVLow.val[0]);
         lowH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -132,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         });
         lowS = (SeekBar) findViewById(R.id.lowS);
-        lowS.setProgress((int)GreenHSVLow.val[1]);
+        lowS.setProgress((int) GreenHSVLow.val[1]);
         lowS.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -149,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         });
         lowV = (SeekBar) findViewById(R.id.lowV);
-        lowV.setProgress((int)GreenHSVLow.val[2]);
+        lowV.setProgress((int) GreenHSVLow.val[2]);
         lowV.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -166,17 +170,17 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         });
         highHtxt = (TextView) findViewById(R.id.HH);
-        highHtxt.setText(GreenHSVHigh.val[0]+"");
+        highHtxt.setText(GreenHSVHigh.val[0] + "");
         highStxt = (TextView) findViewById(R.id.HS);
-        highStxt.setText(GreenHSVHigh.val[1]+"");
+        highStxt.setText(GreenHSVHigh.val[1] + "");
         highVtxt = (TextView) findViewById(R.id.HV);
-        highVtxt.setText(GreenHSVHigh.val[2]+"");
+        highVtxt.setText(GreenHSVHigh.val[2] + "");
         lowHtxt = (TextView) findViewById(R.id.LH);
-        lowHtxt.setText(GreenHSVLow.val[0]+"");
+        lowHtxt.setText(GreenHSVLow.val[0] + "");
         lowStxt = (TextView) findViewById(R.id.LS);
-        lowStxt.setText(GreenHSVLow.val[1]+"");
+        lowStxt.setText(GreenHSVLow.val[1] + "");
         lowVtxt = (TextView) findViewById(R.id.LV);
-        lowVtxt.setText(GreenHSVLow.val[2]+"");
+        lowVtxt.setText(GreenHSVLow.val[2] + "");
 
         modeEditText = (EditText) findViewById(R.id.modeText);
 
@@ -264,30 +268,28 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public void onCameraViewStopped() {
     }
 
-    Scalar GreenHSVLow = new Scalar(50, 30, 30), GreenHSVHigh = new Scalar(120, 100, 100);
+    Scalar GreenHSVLow = new Scalar(56, 65, 75), GreenHSVHigh = new Scalar(120, 350, 350);
 
     @Override
     //take image frame from camera modify it and display it on the screen.
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        //try {
-        Mat frame = inputFrame.rgba(), orginal = frame.clone();
+
+        Mat frame = inputFrame.rgba(), frameHSV = frame.clone(), mask = frame.clone();
         Imgproc.GaussianBlur(frame, frame, new Size(3, 3), 0);
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2RGB);
-        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(frame, GreenHSVLow, GreenHSVHigh, frame);
+        Imgproc.cvtColor(frame, frameHSV, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(frameHSV, GreenHSVLow, GreenHSVHigh, mask);
 
         List<MatOfPoint> contours = new ArrayList<>();
-        Imgproc.findContours(frame, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(mask, contours, mask, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
         List<MatOfPoint> maxContours = new ArrayList<>();
 
         if (contours.size() >= 2) {
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++) { // find 2 largest contours
                 MatOfPoint maxContour = contours.get(0);
                 double maxArea = 0;
-                Iterator<MatOfPoint> iterator = contours.iterator();
-                while (iterator.hasNext()) {
-                    MatOfPoint contour = iterator.next();
+                for (MatOfPoint contour : contours) {
                     double area = Imgproc.contourArea(contour);
                     if (area > maxArea) {
                         maxArea = area;
@@ -297,20 +299,93 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 maxContours.add(maxContour);
                 contours.remove(maxContour);
             }
-            Imgproc.drawContours(orginal, maxContours, -1, new Scalar(100, 256, 0), 3);
+
+            if (!contours.isEmpty()) {
+                double maxArea = Imgproc.contourArea(maxContours.get(0));
+                for (MatOfPoint contour : contours) {
+                    double area = Imgproc.contourArea(contour);
+                    if (area / maxArea > 0.65)
+                        maxContours.add(contour);
+                }
+            }
+            Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 3);
+
+
+            List<RotatedRect> possibleRects = new ArrayList<>();
+            MatOfPoint2f cnt = new MatOfPoint2f();
+            for (MatOfPoint c : maxContours) {
+                c.convertTo(cnt, CvType.CV_32F);
+                possibleRects.add(Imgproc.minAreaRect(cnt));
+            }
+            cnt.release();
+
+            Point center = centerOf(frame);
+            label(frame, center, new Scalar(250, 50, 50));
+
+            double minDist = euclideanDistance(possibleRects.get(0).center, center);
+            RotatedRect centerRec = possibleRects.get(0);
+
+            for (RotatedRect rec : possibleRects) {
+                double dist = euclideanDistance(rec.center, center);
+                if (dist < minDist) {
+                    minDist = dist;
+                    centerRec = rec;
+                }
+                drawRect(frame,rec,new Scalar(50,50,150),3);
+            }
+            drawRect(frame,centerRec,new Scalar(250,100,250),3);
+
+            label(frame, center, new Scalar(250, 50, 50));
         }
 
+        for (MatOfPoint c : maxContours)
+            c.release();
+        for (MatOfPoint c : contours)
+            c.release();
+        System.gc();
         switch (Integer.parseInt(modeEditText.getText().toString())) {
             case 0:
-                return orginal;
+                mask.release();
+                frameHSV.release();
+                return frame;
             default:
+                mask.copyTo(frame);
+                frameHSV.release();
+                mask.release();
                 return frame;
         }
+    }
 
-        /*}catch (Exception e){
-            throw e;//TODO: Swallow the exception on release build
-        }finally {
-            return inputFrame.gray();
-        }*/
+    public Point centerOf(Mat m) {
+        Point center = new Point();
+        center.x = m.width() / 2;
+        center.y = m.height() / 2;
+        return center;
+    }
+
+    public void label(Mat src, Point p, Scalar color) {
+        Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 100, 4, 1);
+    }
+
+    public double euclideanDistance(Point a, Point b) {
+        double distance = 0.0;
+        try {
+            if (a != null && b != null) {
+                double xDiff = a.x - b.x;
+                double yDiff = a.y - b.y;
+                distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+            }
+        } catch (Exception e) {
+            System.out.println("Something went wrong in euclideanDistance function: " + e.getMessage());
+        }
+        return distance;
+    }
+    Point points[] = new Point[4];
+    public void drawRect(Mat src, RotatedRect rec,Scalar color, int thickness){
+        try{
+        rec.points(points);
+        for (int i = 0; i < 4; ++i) {
+            Imgproc.line(src, points[i], points[(i + 1) % 4], color, thickness);
+        }}catch (Exception e){System.out.println("Something went wrong in drawRect function: " + e.getMessage());}
     }
 }
