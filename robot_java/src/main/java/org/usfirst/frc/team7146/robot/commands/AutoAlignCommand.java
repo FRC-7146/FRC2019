@@ -2,7 +2,6 @@ package org.usfirst.frc.team7146.robot.commands;
 
 import java.util.logging.Logger;
 
-import org.opencv.core.Mat;
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.subsystems.StatusSubsystem;
 

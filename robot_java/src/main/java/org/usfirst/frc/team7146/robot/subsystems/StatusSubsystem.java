@@ -2,7 +2,6 @@ package org.usfirst.frc.team7146.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -94,8 +93,10 @@ public class StatusSubsystem extends Subsystem {
 			Mat frame = new Mat();
 			Mat dst = new Mat();
 			Point points[] = new Point[4];
-			MatOfPoint2f cnt1 = new MatOfPoint2f(), cnt2 = new MatOfPoint2f();
-			int iteration = 0;
+			List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+			List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
+
+			int gcIteration = 0;
 			while (!Thread.interrupted()) {
 				try {
 					if (0 == cvSink.grabFrame(frame)) {
@@ -104,18 +105,13 @@ public class StatusSubsystem extends Subsystem {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
 						Core.inRange(frame, new Scalar(80, 40, 40), new Scalar(110, 360, 360), dst);
 
-						List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-						List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
-
 						if (contours.size() >= 2) {
-							for (int i = 0; i < 2; i++) {
+							for (int i = 0; i < 2; i++) { // find 2 largest contours
 								MatOfPoint maxContour = contours.get(0);
 								double maxArea = 0;
-								Iterator<MatOfPoint> iterator = contours.iterator();
-								while (iterator.hasNext()) {
-									MatOfPoint contour = iterator.next();
+								for (MatOfPoint contour : contours) {
 									double area = Imgproc.contourArea(contour);
 									if (area > maxArea) {
 										maxArea = area;
@@ -125,20 +121,24 @@ public class StatusSubsystem extends Subsystem {
 								maxContours.add(maxContour);
 								contours.remove(maxContour);
 							}
-							if (!contours.isEmpty())
-								contours.forEach((MatOfPoint c) -> {
-									c.release();
-								});
-							Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
+							// TODO: Need to add left2right iteration=========
+							if (!contours.isEmpty()) {
+								double maxArea = Imgproc.contourArea(contours.get(0));
+								for (MatOfPoint contour : contours) {
+									double area = Imgproc.contourArea(contour);
+									if (area / maxArea > 0.65)
+										maxContours.add(contour);
+								}
+							}
+							// ===============================================
 
+							Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
+							MatOfPoint2f cnt1 = new MatOfPoint2f(), cnt2 = new MatOfPoint2f();
 							maxContours.get(0).convertTo(cnt1, CvType.CV_32F);
 							maxContours.get(1).convertTo(cnt2, CvType.CV_32F);
 							RotatedRect rec1 = Imgproc.minAreaRect(cnt1);
 							RotatedRect rec2 = Imgproc.minAreaRect(cnt2);
-							if (!maxContours.isEmpty())
-								maxContours.forEach((MatOfPoint c) -> {
-									c.release();
-								});
+
 							rec1.points(points);
 							for (int i = 0; i < 4; ++i) {
 								Imgproc.line(frame, points[i], points[(i + 1) % 4], new Scalar(0, 0, 0), 1);
@@ -147,13 +147,23 @@ public class StatusSubsystem extends Subsystem {
 							for (int i = 0; i < 4; ++i) {
 								Imgproc.line(frame, points[i], points[(i + 1) % 4], new Scalar(0, 0, 0), 1);
 							}
-
 						}
 						cvSrcOut.putFrame(frame);
 						cvSrcMask.putFrame(dst);
-						if (iteration++ > 1000) {
+
+						if (!contours.isEmpty())
+							contours.forEach((MatOfPoint c) -> {
+								c.release();
+							});
+						contours.clear();
+						if (!maxContours.isEmpty())
+							maxContours.forEach((MatOfPoint c) -> {
+								c.release();
+							});
+						maxContours.clear();
+						if (gcIteration++ > 1000) {
 							System.gc();
-							iteration = 0;
+							gcIteration = 0;
 						}
 					}
 				} catch (Exception e) {

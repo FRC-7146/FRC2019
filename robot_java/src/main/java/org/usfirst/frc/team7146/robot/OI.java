@@ -10,9 +10,7 @@ package org.usfirst.frc.team7146.robot;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import org.usfirst.frc.team7146.robot.RobotMap.MOTOR.PRECISION;
 import org.usfirst.frc.team7146.robot.commands.CmdBase;
-import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 import org.usfirst.frc.team7146.robot.commands.ModeChangeCommand;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;

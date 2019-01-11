@@ -56,7 +56,6 @@ public class RobotMap {
 	}
 
 	public static class JS {
-		// TODO: May need confirmation; May differ on QDriverStation;
 		public static final int NUM_XBOX_X = 1;
 		public static final int NUM_XBOX_A = 2;
 		public static final int NUM_XBOX_B = 3;

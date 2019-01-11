@@ -9,17 +9,13 @@ package org.usfirst.frc.team7146.robot.subsystems;
 
 import java.util.logging.Logger;
 
-import javax.management.modelmbean.RequiredModelMBean;
-
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.RobotMap;
 import org.usfirst.frc.team7146.robot.commands.AutoAlignCommand;
-import org.usfirst.frc.team7146.robot.commands.CmdBase;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 import org.usfirst.frc.team7146.robot.commands.ManualControlCommand;
 
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
