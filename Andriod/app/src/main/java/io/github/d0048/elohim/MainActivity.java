@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
             Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 3);
 
-
+            // List all feasible rectangles===========================================================
             List<RotatedRect> possibleRects = new ArrayList<>();
             MatOfPoint2f cnt = new MatOfPoint2f();
             for (MatOfPoint c : maxContours) {
@@ -322,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             Point center = centerOf(frame);
             label(frame, center, new Scalar(250, 50, 50));
 
+            // Calculate possible pairs=================================================
             double minDist = euclideanDistance(possibleRects.get(0).center, center);
             RotatedRect centerRec = possibleRects.get(0);
 
@@ -331,9 +332,19 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     minDist = dist;
                     centerRec = rec;
                 }
-                drawRect(frame,rec,new Scalar(50,50,150),3);
+                drawRect(frame, rec, new Scalar(50, 50, 150), 3);
             }
-            drawRect(frame,centerRec,new Scalar(250,100,250),3);
+            drawRect(frame, centerRec, new Scalar(250, 100, 250), 4);
+
+            // Right one: rot > -45
+            // Left one: rot < -45
+            Imgproc.putText(frame, isLeft(centerRec)?"search right":"search left", centerRec.center, 4, 4, new Scalar(250, 100, 250), 2);
+
+            RotatedRect matchedRec = null;
+            if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec, possibleRects)) != null) {// if left one then search right for a right one
+                drawRect(frame, centerRec, new Scalar(256, 160, 256), 4);
+                Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
+            }
 
             label(frame, center, new Scalar(250, 50, 50));
         }
@@ -355,6 +366,29 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 return frame;
         }
     }
+public boolean isLeft(RotatedRect rec){
+        return rec.angle<-45;
+}
+    // Right one: rot > -45
+    // Left one: rot < -45
+    // dir=1 -> search right
+    //dir=0 -> search left
+    public RotatedRect searchClosestRectMatch(boolean dir, RotatedRect centerRec, List<RotatedRect> rects) {
+        RotatedRect matchRec = null;
+        double minDist = 99999*(dir?1:-1);
+        double dist;
+        for (RotatedRect rec : rects) {
+            dist = rec.center.x - centerRec.center.x; // positive when search right
+            if (dir &&  !isLeft(rec) &&dist>0&&(dist) < Math.abs(minDist)) {//search right for a right one
+                minDist = dist;
+                matchRec = rec;
+            } else if (!dir &&   isLeft(rec) &&dist<0&& (dist) > minDist) { // search left for a left one
+                minDist = dist;
+                matchRec = rec;
+            }
+        }
+        return matchRec;
+    }
 
     public Point centerOf(Mat m) {
         Point center = new Point();
@@ -368,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }
 
     public double euclideanDistance(Point a, Point b) {
-        double distance = 0.0;
+        double distance = 99999;
         try {
             if (a != null && b != null) {
                 double xDiff = a.x - b.x;
@@ -380,12 +414,17 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
         return distance;
     }
+
     Point points[] = new Point[4];
-    public void drawRect(Mat src, RotatedRect rec,Scalar color, int thickness){
-        try{
-        rec.points(points);
-        for (int i = 0; i < 4; ++i) {
-            Imgproc.line(src, points[i], points[(i + 1) % 4], color, thickness);
-        }}catch (Exception e){System.out.println("Something went wrong in drawRect function: " + e.getMessage());}
+
+    public void drawRect(Mat src, RotatedRect rec, Scalar color, int thickness) {
+        try {
+            rec.points(points);
+            for (int i = 0; i < 4; ++i) {
+                Imgproc.line(src, points[i], points[(i + 1) % 4], color, thickness);
+            }
+        } catch (Exception e) {
+            System.out.println("Something went wrong in drawRect function: " + e.getMessage());
+        }
     }
 }
