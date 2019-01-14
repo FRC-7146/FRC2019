@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -31,6 +32,8 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 public class OI {
 
 	private static final Logger logger = Logger.getLogger(OI.class.getName());
+
+	public Servo grabberServo = new Servo(RobotMap.MOTOR.GRABBER_PWN_SERVO);
 
 	public SpeedController frontLeftMotor = new Spark(RobotMap.MOTOR.FL_MOTOR),
 			rearLeftMotor = new Spark(RobotMap.MOTOR.BL_MOTOR), frontRightMotor = new Spark(RobotMap.MOTOR.FR_MOTOR),

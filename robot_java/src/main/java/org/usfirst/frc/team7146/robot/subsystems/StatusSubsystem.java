@@ -43,6 +43,7 @@ public class StatusSubsystem extends Subsystem {
 			@Override
 			protected void execute() {
 				super.execute();
+				pollSDBConfig();
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mStatusSubsystem.write_info();
 			}
@@ -72,7 +73,8 @@ public class StatusSubsystem extends Subsystem {
 	CvSink cvSink;
 	CvSource cvSrcOut, cvSrcMask;
 	int[] resolution = { 60, 30 };
-	// MjpegServer mjpegServer = mCameraServer.addServer("Cubejpeg");
+	Scalar LOWER_BOUND = new Scalar(80, 40, 40), UPPER_BOUND = new Scalar(110, 360, 360);
+	int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
 
 	public static boolean isCVUsable = false;
 
@@ -83,8 +85,10 @@ public class StatusSubsystem extends Subsystem {
 			cvSink = mCameraServer.getVideo();
 			mUsbCamera.setFPS(10);
 			mUsbCamera.setResolution(resolution[0], resolution[1]);
+			mUsbCamera.setExposureAuto();
 			cvSrcOut = mCameraServer.putVideo("src out", resolution[0], resolution[1]);
 			cvSrcMask = mCameraServer.putVideo("src mask", resolution[0], resolution[1]);
+			putCVInfo();
 		} catch (Exception e) {
 			logger.warning("[CV] init failed:");
 			e.printStackTrace();
@@ -103,7 +107,7 @@ public class StatusSubsystem extends Subsystem {
 						logger.warning("Error grabbing fram from camera");
 					} else {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
-						Core.inRange(frame, new Scalar(80, 40, 40), new Scalar(110, 360, 360), dst);
+						Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
 
 						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
@@ -180,6 +184,35 @@ public class StatusSubsystem extends Subsystem {
 		rotatedRect.points(vertices);
 		MatOfPoint points = new MatOfPoint(vertices);
 		Imgproc.drawContours(image, Arrays.asList(points), -1, color, thickness);
+	}
+
+	public void pollSDBConfig() {
+		try {
+			UPPER_BOUND.val[0] = SmartDashboard.getNumber("HIGH H", UPPER_BOUND.val[0]);
+			UPPER_BOUND.val[1] = SmartDashboard.getNumber("HIGH S", UPPER_BOUND.val[1]);
+			UPPER_BOUND.val[2] = SmartDashboard.getNumber("HIGH V", UPPER_BOUND.val[2]);
+			LOWER_BOUND.val[0] = SmartDashboard.getNumber("LOW H", LOWER_BOUND.val[0]);
+			LOWER_BOUND.val[1] = SmartDashboard.getNumber("LOW S", LOWER_BOUND.val[1]);
+			LOWER_BOUND.val[2] = SmartDashboard.getNumber("LOW V", LOWER_BOUND.val[2]);
+			EXPLOSURE = (int) SmartDashboard.getNumber("EXPLOSURE(-1: auto)", EXPLOSURE);
+			if (EXPLOSURE != -1)
+				mUsbCamera.setExposureManual(EXPLOSURE);
+			else
+				mUsbCamera.setExposureAuto();
+
+		} catch (Exception e) {
+			logger.warning("[CV] poll failed:" + e.getMessage());
+		}
+	}
+
+	public void putCVInfo() {
+		SmartDashboard.putNumber("HIGH H", UPPER_BOUND.val[0]);
+		SmartDashboard.putNumber("HIGH S", UPPER_BOUND.val[1]);
+		SmartDashboard.putNumber("HIGH V", UPPER_BOUND.val[2]);
+		SmartDashboard.putNumber("LOW H", LOWER_BOUND.val[0]);
+		SmartDashboard.putNumber("LOW S", LOWER_BOUND.val[1]);
+		SmartDashboard.putNumber("LOW V", LOWER_BOUND.val[2]);
+		SmartDashboard.putNumber("EXPLOSURE(-1: auto)", EXPLOSURE);
 	}
 
 	void debug(String s) {

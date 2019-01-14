@@ -81,10 +81,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void testInit() {
-		accelTest = new AccelTestCMD();
 	}
-
-	AccelTestCMD accelTest;
 
 	@Override
 	public void testPeriodic() {

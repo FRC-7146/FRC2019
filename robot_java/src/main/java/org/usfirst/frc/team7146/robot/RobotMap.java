@@ -16,6 +16,7 @@ package org.usfirst.frc.team7146.robot;
 public class RobotMap {
 
 	public static class MOTOR {
+		public static final int GRABBER_PWN_SERVO = 9;
 		public static final int LEFT_MOTOR_GROUP = 0;
 		public static final int RIGHT_MOTOR_GROUP = 1;
 		public static final int FL_MOTOR = 0, BL_MOTOR = 1, FR_MOTOR = 2, BR_MOTOR = 3;

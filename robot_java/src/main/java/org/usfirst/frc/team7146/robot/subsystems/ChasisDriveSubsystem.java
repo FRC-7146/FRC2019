@@ -15,6 +15,7 @@ import org.usfirst.frc.team7146.robot.commands.AutoAlignCommand;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 import org.usfirst.frc.team7146.robot.commands.ManualControlCommand;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
