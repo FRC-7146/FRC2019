@@ -74,8 +74,8 @@ public class StatusSubsystem extends Subsystem {
 	public UsbCamera mUsbCamera;
 	CvSink cvSink;
 	CvSource cvSrcOut, cvSrcMask;
-	int[] resolution = { 60, 30 };
-	Scalar LOWER_BOUND = new Scalar(80, 40, 40), UPPER_BOUND = new Scalar(110, 360, 360);
+	int[] resolution = { 30, 60 };
+	Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
 	int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
 
 	public static boolean isCVEnabled = true;
@@ -113,8 +113,8 @@ public class StatusSubsystem extends Subsystem {
 
 						List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 						List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
-						Imgproc.findContours(dst, contours, dst, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
+						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+						Utils.release(dst);
 						if (contours.size() >= 2) {
 							for (int i = 0; i < 2; i++) { // find 2 largest contours
 								MatOfPoint maxContour = contours.get(0);
@@ -129,29 +129,38 @@ public class StatusSubsystem extends Subsystem {
 								maxContours.add(maxContour);
 								contours.remove(maxContour);
 							}
+							Utils.releaseMoPs(contours);
+							/*
+							 * if (!contours.isEmpty()) { double maxArea =
+							 * Imgproc.contourArea(maxContours.get(0)); for (MatOfPoint contour : contours)
+							 * { double area = Imgproc.contourArea(contour); if (area / maxArea > 0.65)
+							 * maxContours.add(contour); contours.remove(contour); } }
+							 */
 							Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
+							List<RotatedRect> possibleRects = new ArrayList<>();
+							MatOfPoint2f cnt = new MatOfPoint2f();
+							for (MatOfPoint c : maxContours) {
+								c.convertTo(cnt, CvType.CV_32F);
+								possibleRects.add(Imgproc.minAreaRect(cnt));
+								drawRotatedRect(frame, possibleRects.get(possibleRects.size() - 1),
+										new Scalar(0, 250, 0), 1);
+							}
+							cnt.release();
+							Utils.releaseMoPs(maxContours);
+							Point center = centerOf(frame);
+							label(frame, center, new Scalar(250, 50, 50));
 
-							MatOfPoint2f cnt1 = new MatOfPoint2f(), cnt2 = new MatOfPoint2f();
-							maxContours.get(0).convertTo(cnt1, CvType.CV_32F);
-							maxContours.get(1).convertTo(cnt2, CvType.CV_32F);
-							RotatedRect rec1 = Imgproc.minAreaRect(cnt1);
-							RotatedRect rec2 = Imgproc.minAreaRect(cnt2);
-							drawRotatedRect(frame, rec1, new Scalar(0, 200, 0), 1);
-							drawRotatedRect(frame, rec2, new Scalar(0, 200, 0), 1);
-							cnt1.release();
-							cnt2.release();
+							Point target = new Point();
+							target.x = (possibleRects.get(0).center.x + possibleRects.get(1).center.x) / 2;
+							target.y = (possibleRects.get(0).center.y + possibleRects.get(1).center.y) / 2;
+							label(frame, target, new Scalar(0, 100, 100));
 						}
 						cvSrcOut.putFrame(frame);
-						cvSrcMask.putFrame(dst);
-
+						// cvSrcMask.putFrame(dst);
 						// Garbage Collection
-						Utils.releaseMoPs(contours);
-						contours.clear();
-						Utils.releaseMoPs(maxContours);
-						maxContours.clear();
 						Utils.release(frame);
 						Utils.release(dst);
-						if (gcIteration++ > 100) {
+						if (gcIteration++ > 10) {
 							System.gc();
 							gcIteration = 0;
 						}
@@ -211,7 +220,7 @@ public class StatusSubsystem extends Subsystem {
 	}
 
 	public void label(Mat src, Point p, Scalar color) {
-		Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 60, 4, 1);
+		Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 8, 2, 1);
 	}
 
 	public double euclideanDistance(Point a, Point b) {

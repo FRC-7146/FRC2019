@@ -74,10 +74,9 @@ public class Utils {
 
 	public static void releaseMoP2fs(List<MatOfPoint2f> os) {
 		if (!os.isEmpty())
-			for (Object o : os) {
+			for (MatOfPoint2f o : os) {
 				try {
-					if (!((MatOfPoint2f) o).empty())
-
+					if (!o.empty())
 						((MatOfPoint2f) o).release();
 				} finally {
 				}
@@ -86,8 +85,7 @@ public class Utils {
 
 	public static void releaseMoP2f(MatOfPoint2f o) {
 		try {
-			if (!((MatOfPoint2f) o).empty())
-
+			if (!o.empty())
 				((MatOfPoint2f) o).release();
 		} finally {
 		}
