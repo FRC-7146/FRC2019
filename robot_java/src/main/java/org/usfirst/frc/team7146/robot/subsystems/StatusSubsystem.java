@@ -2,6 +2,7 @@ package org.usfirst.frc.team7146.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -74,7 +75,7 @@ public class StatusSubsystem extends Subsystem {
 	public UsbCamera mUsbCamera;
 	CvSink cvSink;
 	CvSource cvSrcOut, cvSrcMask;
-	int[] resolution = { 30, 60 };
+	int[] resolution = { 20, 50 };
 	Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
 	int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
 
@@ -88,7 +89,10 @@ public class StatusSubsystem extends Subsystem {
 			cvSink = mCameraServer.getVideo();
 			mUsbCamera.setFPS(10);
 			mUsbCamera.setResolution(resolution[0], resolution[1]);
-			mUsbCamera.setExposureAuto();
+			if (EXPLOSURE == -1)
+				mUsbCamera.setExposureAuto();
+			else
+				mUsbCamera.setExposureManual(EXPLOSURE);
 			cvSrcOut = mCameraServer.putVideo("src out", resolution[0], resolution[1]);
 			cvSrcMask = mCameraServer.putVideo("src mask", resolution[0], resolution[1]);
 			putCVInfo();
@@ -98,28 +102,32 @@ public class StatusSubsystem extends Subsystem {
 		}
 		Thread t = new Thread(() -> {
 			int gcIteration = 0;
+			Mat frame = new Mat();
+			Mat dst = new Mat();
+			List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+			List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
+			List<RotatedRect> possibleRects = new ArrayList<>();
 			while (!Thread.interrupted()) {
 				if (!isCVEnabled)
 					continue;
 				try {
-					Mat frame = new Mat();
-					Mat dst = new Mat();
 					if (0 == cvSink.grabFrame(frame)) {
 						logger.warning("Error grabbing fram from camera");
 						continue;
 					} else {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
 						Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
-
-						List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-						List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
+						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
+						contours.clear();
+						maxContours.clear();
 						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 						Utils.release(dst);
 						if (contours.size() >= 2) {
 							for (int i = 0; i < 2; i++) { // find 2 largest contours
 								MatOfPoint maxContour = contours.get(0);
 								double maxArea = 0;
-								for (MatOfPoint contour : contours) {
+								for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
+									MatOfPoint contour = iterator.next();
 									double area = Imgproc.contourArea(contour);
 									if (area > maxArea) {
 										maxArea = area;
@@ -129,15 +137,20 @@ public class StatusSubsystem extends Subsystem {
 								maxContours.add(maxContour);
 								contours.remove(maxContour);
 							}
+							if (!contours.isEmpty()) {
+								double maxArea = Imgproc.contourArea(maxContours.get(0));
+								for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
+									MatOfPoint contour = iterator.next();
+									double area = Imgproc.contourArea(contour);
+									if (area / maxArea > 0.65) {
+										maxContours.add(contour);
+										iterator.remove();
+									}
+								}
+							}
 							Utils.releaseMoPs(contours);
-							/*
-							 * if (!contours.isEmpty()) { double maxArea =
-							 * Imgproc.contourArea(maxContours.get(0)); for (MatOfPoint contour : contours)
-							 * { double area = Imgproc.contourArea(contour); if (area / maxArea > 0.65)
-							 * maxContours.add(contour); contours.remove(contour); } }
-							 */
 							Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
-							List<RotatedRect> possibleRects = new ArrayList<>();
+							possibleRects.clear();
 							MatOfPoint2f cnt = new MatOfPoint2f();
 							for (MatOfPoint c : maxContours) {
 								c.convertTo(cnt, CvType.CV_32F);
@@ -150,10 +163,36 @@ public class StatusSubsystem extends Subsystem {
 							Point center = centerOf(frame);
 							label(frame, center, new Scalar(250, 50, 50));
 
-							Point target = new Point();
-							target.x = (possibleRects.get(0).center.x + possibleRects.get(1).center.x) / 2;
-							target.y = (possibleRects.get(0).center.y + possibleRects.get(1).center.y) / 2;
-							label(frame, target, new Scalar(0, 100, 100));
+							double minDist = euclideanDistance(possibleRects.get(0).center, center);
+							RotatedRect centerRec = possibleRects.get(0);
+
+							for (RotatedRect rec : possibleRects) {
+								double dist = euclideanDistance(rec.center, center);
+								if (dist < minDist) {
+									minDist = dist;
+									centerRec = rec;
+								}
+								drawRotatedRect(frame, rec, new Scalar(50, 50, 150), 3);
+							}
+							drawRotatedRect(frame, centerRec, new Scalar(250, 100, 250), 4);
+
+							// Right one: rot > -45
+							// Left one: rot < -45
+							Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
+									Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
+
+							RotatedRect matchedRec = null;
+							Point taget = null;
+							if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec,
+									possibleRects)) != null) {// if left one then search right for a right one
+								drawRotatedRect(frame, centerRec, new Scalar(256, 160, 256), 4);
+								Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
+								taget = new Point();
+								taget.x = (centerRec.center.x + matchedRec.center.x) / 2;
+								taget.y = (centerRec.center.y + matchedRec.center.y) / 2;
+								label(frame, center, new Scalar(0, 0, 0));
+								label(frame, taget, new Scalar(250, 50, 50));
+							}
 						}
 						cvSrcOut.putFrame(frame);
 						// cvSrcMask.putFrame(dst);
@@ -168,6 +207,7 @@ public class StatusSubsystem extends Subsystem {
 				} catch (Exception e) {
 					logger.warning("Error in CV Thread:");
 					e.printStackTrace();
+					isCVUsable = false;
 				}
 			}
 		});
