@@ -34,8 +34,8 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		mOI = new OI();
 		// mOI.mGyro.calibrate();
-		// mOI.mGyro.reset();
-		// logger.warning("Gyro init success");
+		mOI.mGyro.reset();
+		logger.warning("Gyro init cancelled");
 		mStatusSubsystem = new StatusSubsystem();
 		mChasisDriveSubsystem = new ChasisDriveSubsystem();
 		mOI.mapOI();
@@ -60,7 +60,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.github.d0048.Utils;
 
 public class StatusSubsystem extends Subsystem {
 	private static final Logger logger = Logger.getLogger(StatusSubsystem.class.getName());
@@ -34,7 +35,7 @@ public class StatusSubsystem extends Subsystem {
 	public double absHeading = 0;
 
 	public StatusSubsystem() {
-
+		super();
 	}
 
 	@Override
@@ -50,6 +51,7 @@ public class StatusSubsystem extends Subsystem {
 		};
 		statusDaemon.publicRequires(this);
 		this.setDefaultCommand(statusDaemon);
+		putCVInfo();
 		startVisionDeamon();
 	}
 
@@ -76,6 +78,7 @@ public class StatusSubsystem extends Subsystem {
 	Scalar LOWER_BOUND = new Scalar(80, 40, 40), UPPER_BOUND = new Scalar(110, 360, 360);
 	int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
 
+	public static boolean isCVEnabled = true;
 	public static boolean isCVUsable = false;
 
 	public void startVisionDeamon() {
@@ -94,22 +97,23 @@ public class StatusSubsystem extends Subsystem {
 			e.printStackTrace();
 		}
 		Thread t = new Thread(() -> {
-			Mat frame = new Mat();
-			Mat dst = new Mat();
-			Point points[] = new Point[4];
-			List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-			List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
-
 			int gcIteration = 0;
 			while (!Thread.interrupted()) {
+				if (!isCVEnabled)
+					continue;
 				try {
+					Mat frame = new Mat();
+					Mat dst = new Mat();
 					if (0 == cvSink.grabFrame(frame)) {
 						logger.warning("Error grabbing fram from camera");
+						continue;
 					} else {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
 						Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
 
-						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+						List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+						List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
+						Imgproc.findContours(dst, contours, dst, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
 						if (contours.size() >= 2) {
 							for (int i = 0; i < 2; i++) { // find 2 largest contours
@@ -125,47 +129,29 @@ public class StatusSubsystem extends Subsystem {
 								maxContours.add(maxContour);
 								contours.remove(maxContour);
 							}
-							// TODO: Need to add left2right iteration=========
-							if (!contours.isEmpty()) {
-								double maxArea = Imgproc.contourArea(contours.get(0));
-								for (MatOfPoint contour : contours) {
-									double area = Imgproc.contourArea(contour);
-									if (area / maxArea > 0.65)
-										maxContours.add(contour);
-								}
-							}
-							// ===============================================
-
 							Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
+
 							MatOfPoint2f cnt1 = new MatOfPoint2f(), cnt2 = new MatOfPoint2f();
 							maxContours.get(0).convertTo(cnt1, CvType.CV_32F);
 							maxContours.get(1).convertTo(cnt2, CvType.CV_32F);
 							RotatedRect rec1 = Imgproc.minAreaRect(cnt1);
 							RotatedRect rec2 = Imgproc.minAreaRect(cnt2);
-
-							rec1.points(points);
-							for (int i = 0; i < 4; ++i) {
-								Imgproc.line(frame, points[i], points[(i + 1) % 4], new Scalar(0, 0, 0), 1);
-							}
-							rec2.points(points);
-							for (int i = 0; i < 4; ++i) {
-								Imgproc.line(frame, points[i], points[(i + 1) % 4], new Scalar(0, 0, 0), 1);
-							}
+							drawRotatedRect(frame, rec1, new Scalar(0, 200, 0), 1);
+							drawRotatedRect(frame, rec2, new Scalar(0, 200, 0), 1);
+							cnt1.release();
+							cnt2.release();
 						}
 						cvSrcOut.putFrame(frame);
 						cvSrcMask.putFrame(dst);
 
-						if (!contours.isEmpty())
-							contours.forEach((MatOfPoint c) -> {
-								c.release();
-							});
+						// Garbage Collection
+						Utils.releaseMoPs(contours);
 						contours.clear();
-						if (!maxContours.isEmpty())
-							maxContours.forEach((MatOfPoint c) -> {
-								c.release();
-							});
+						Utils.releaseMoPs(maxContours);
 						maxContours.clear();
-						if (gcIteration++ > 1000) {
+						Utils.release(frame);
+						Utils.release(dst);
+						if (gcIteration++ > 100) {
 							System.gc();
 							gcIteration = 0;
 						}
@@ -179,12 +165,69 @@ public class StatusSubsystem extends Subsystem {
 		t.start();
 	}
 
+	static Point[] vertices = new Point[4];
+
 	public static void drawRotatedRect(Mat image, RotatedRect rotatedRect, Scalar color, int thickness) {
-		Point[] vertices = new Point[4];
 		rotatedRect.points(vertices);
 		MatOfPoint points = new MatOfPoint(vertices);
 		Imgproc.drawContours(image, Arrays.asList(points), -1, color, thickness);
+		Utils.releaseMoP(points);
 	}
+
+	public boolean isLeft(RotatedRect rec) {
+		return rec.angle < -45;
+	}
+
+	// Right one: rot > -45
+	// Left one: rot < -45
+	// dir=1 -> search right
+	// dir=0 -> search left
+	public RotatedRect searchClosestRectMatch(boolean dir, RotatedRect centerRec, List<RotatedRect> rects) {
+		RotatedRect matchRec = null;
+		double minDist = 99999 * (dir ? 1 : -1);
+		double dist;
+		for (RotatedRect rec : rects) {
+			dist = rec.center.x - centerRec.center.x; // positive when search right
+			if (dir && !isLeft(rec) && dist > 0 && (dist) < Math.abs(minDist)) {// search right for a right one
+				if (Math.abs(centerRec.center.y - rec.center.y) < centerRec.size.width * 2) {
+					minDist = dist;
+					matchRec = rec;
+				}
+			} else if (!dir && isLeft(rec) && dist < 0 && (dist) > minDist) { // search left for a left one
+				if (Math.abs(centerRec.center.y - rec.center.y) < centerRec.size.width * 2) {
+					minDist = dist;
+					matchRec = rec;
+				}
+			}
+		}
+		return matchRec;
+	}
+
+	public Point centerOf(Mat m) {
+		Point center = new Point();
+		center.x = m.width() / 2;
+		center.y = m.height() / 2;
+		return center;
+	}
+
+	public void label(Mat src, Point p, Scalar color) {
+		Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 60, 4, 1);
+	}
+
+	public double euclideanDistance(Point a, Point b) {
+		double distance = 99999;
+		try {
+			if (a != null && b != null) {
+				double xDiff = a.x - b.x;
+				double yDiff = a.y - b.y;
+				distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+			}
+		} catch (Exception e) {
+			System.out.println("Something went wrong in euclideanDistance function: " + e.getMessage());
+		}
+		return distance;
+	}
+	// -----------------------
 
 	public void pollSDBConfig() {
 		try {

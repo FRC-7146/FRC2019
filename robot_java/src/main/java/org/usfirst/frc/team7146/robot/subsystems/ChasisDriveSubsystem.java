@@ -68,9 +68,13 @@ public class ChasisDriveSubsystem extends Subsystem {
 	@Override
 	protected void initDefaultCommand() {
 		CmdGroupBase driveDaemon = new CmdGroupBase("Chasis Daemon", 100) {
+			boolean i = true;
+
 			@Override
 			protected void execute() {
-				Robot.mChasisDriveSubsystem.write_info();
+				if (i)
+					Robot.mChasisDriveSubsystem.write_info();
+				i = !i;
 			}
 
 			@Override
@@ -78,11 +82,10 @@ public class ChasisDriveSubsystem extends Subsystem {
 				return false;
 			}
 		};
-		driveDaemon.addParallel(new AutoAlignCommand());
+		// driveDaemon.addParallel(new AutoAlignCommand());
 		driveDaemon.addParallel(new ManualControlCommand());
 		driveDaemon.publicRequires(this);
 
-		// driveDaemon.addParallel(command);//manual drive command
 		setDefaultCommand(driveDaemon);
 	}
 

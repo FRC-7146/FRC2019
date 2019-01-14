@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 
 public class Utils {
 	private static final Logger logger = Logger.getLogger(Utils.class.getName());
@@ -23,7 +25,8 @@ public class Utils {
 	public static void release(Mat o) {
 		if (o != null) {
 			try {
-				((Mat) o).release();
+				if (!((Mat) o).empty())
+					((Mat) o).release();
 			} finally {
 			}
 		}
@@ -32,19 +35,63 @@ public class Utils {
 	public static void release(Object[] os) {
 		for (Object o : os) {
 			try {
-				release((Mat) o);
+				if (!((Mat) o).empty())
+					release((Mat) o);
 			} finally {
 			}
 		}
 	}
 
 	public static void release(List<Mat> os) {
-		for (Object o : os) {
-			try {
-				((Mat) o).release();
-			} finally {
+		if (!os.isEmpty())
+			for (Object o : os) {
+				try {
+					if (!((Mat) o).empty())
+						((Mat) o).release();
+				} finally {
+				}
 			}
+	}
+
+	public static void releaseMoPs(List<MatOfPoint> os) {
+		if (!os.isEmpty())
+			for (Object o : os) {
+				try {
+					if (!((MatOfPoint) o).empty())
+						((MatOfPoint) o).release();
+				} finally {
+				}
+			}
+	}
+
+	public static void releaseMoP(MatOfPoint o) {
+		try {
+			if (!((MatOfPoint) o).empty())
+				((MatOfPoint) o).release();
+		} finally {
 		}
+	}
+
+	public static void releaseMoP2fs(List<MatOfPoint2f> os) {
+		if (!os.isEmpty())
+			for (Object o : os) {
+				try {
+					if (!((MatOfPoint2f) o).empty())
+
+						((MatOfPoint2f) o).release();
+				} finally {
+				}
+			}
+	}
+
+	public static void releaseMoP2f(MatOfPoint2f o) {
+		try {
+			if (!((MatOfPoint2f) o).empty())
+
+				((MatOfPoint2f) o).release();
+		} finally {
+		}
+
 	}
 
 	void debug(String s) {
