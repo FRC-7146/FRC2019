@@ -25,12 +25,13 @@ public class ManualControlCommand extends CmdGroupBase {
 		if (disableBtn.get()) // Disable manual control if auto enabled
 			return;
 
-		double yIn = js.getY(), xIn = js.getX(), zIn = js.getZ(), grabberIn = js.getTwist(), povIn = js.getPOV();
+		double yIn = js.getRawAxis(0), xIn = js.getRawAxis(1), zIn = js.getRawAxis(2), grabberIn = js.getRawAxis(3),
+				povIn = js.getPOV();
 		try {
 			if (povIn == -1)
 				Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
 			else
-				Robot.mChasisDriveSubsystem.pidTurn(povIn);
+				Robot.mChasisDriveSubsystem.pidTurn(Robot.mStatusSubsystem.absHeading - povIn);
 			Robot.mOI.grabberServo.set(grabberIn);
 		} catch (Exception e) {
 			// not installed

@@ -53,6 +53,17 @@ public class RobotMap {
 			public String toString() {
 				return "SPORT";
 			}
+
+			public static class AUTO extends NORMAL {
+				public double X_FACTOR = 1, Y_FACTOR = 1, Z_FACTOR = 1;
+				public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
+				public double SENSITIVITY = 0.08;
+
+				@Override
+				public String toString() {
+					return "AUTO";
+				}
+			}
 		}
 	}
 

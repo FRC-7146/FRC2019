@@ -35,9 +35,9 @@ public class ChasisDriveSubsystem extends Subsystem {
 	public ChasisDriveSubsystem() {
 	}
 
-	public void pidTurn(double reqAng) {
+	public void pidTurn(double relativeRequestAng) {
 		status.pullGyro();
-		double rot = reqAng - status.absHeading;
+		double rot = relativeRequestAng - status.heading;
 		rot *= 0.05; // PID FACTOR
 		safeDriveCartesian(currentYSpeed, currentXSpeed, rot);
 	}

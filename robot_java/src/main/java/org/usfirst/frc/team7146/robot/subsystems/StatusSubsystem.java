@@ -34,6 +34,7 @@ public class StatusSubsystem extends Subsystem {
 	public Gyro mGyro = Robot.mOI.mGyro;
 	public Accelerometer mAccel = Robot.mOI.mAccelerometer;
 	public double absHeading = 0;
+	public double heading = 0;
 
 	public StatusSubsystem() {
 		super();
@@ -57,7 +58,8 @@ public class StatusSubsystem extends Subsystem {
 	}
 
 	public void pullGyro() {
-		absHeading = (360 + (mGyro.getAngle() % 360)) % 360;// Since it could return (-inf,inf)
+		heading = mGyro.getAngle();
+		absHeading = (360 + (heading % 360)) % 360;// Since it could return (-inf,inf)
 	}
 
 	public void reset() {
@@ -69,6 +71,7 @@ public class StatusSubsystem extends Subsystem {
 		SmartDashboard.putNumber("Acc X", mAccel.getX());
 		SmartDashboard.putNumber("Acc Y", mAccel.getY());
 		SmartDashboard.putNumber("Acc Z", mAccel.getZ());
+		SmartDashboard.putBoolean("CV Status", isCVUsable);
 	}
 
 	public CameraServer mCameraServer;
