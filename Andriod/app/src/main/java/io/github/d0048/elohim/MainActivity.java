@@ -338,15 +338,19 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
             // Right one: rot > -45
             // Left one: rot < -45
-            Imgproc.putText(frame, isLeft(centerRec)?"search right":"search left", centerRec.center, 4, 4, new Scalar(250, 100, 250), 2);
+            Imgproc.putText(frame, isLeft(centerRec)?"----------->":"<-----------", centerRec.center, Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 2);
 
             RotatedRect matchedRec = null;
+            Point taget=null;
             if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec, possibleRects)) != null) {// if left one then search right for a right one
                 drawRect(frame, centerRec, new Scalar(256, 160, 256), 4);
                 Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
+                taget=new Point();
+                taget.x=(centerRec.center.x+matchedRec.center.x)/2;
+                taget.y=(centerRec.center.y+matchedRec.center.y)/2;
+                label(frame, center, new Scalar(0, 0, 0));
+                label(frame, taget, new Scalar(250, 50, 50));
             }
-
-            label(frame, center, new Scalar(250, 50, 50));
         }
 
         for (MatOfPoint c : maxContours)
@@ -380,11 +384,15 @@ public boolean isLeft(RotatedRect rec){
         for (RotatedRect rec : rects) {
             dist = rec.center.x - centerRec.center.x; // positive when search right
             if (dir &&  !isLeft(rec) &&dist>0&&(dist) < Math.abs(minDist)) {//search right for a right one
-                minDist = dist;
-                matchRec = rec;
+                if(Math.abs(centerRec.center.y-rec.center.y)<centerRec.size.width*2) {
+                    minDist = dist;
+                    matchRec = rec;
+                }
             } else if (!dir &&   isLeft(rec) &&dist<0&& (dist) > minDist) { // search left for a left one
-                minDist = dist;
-                matchRec = rec;
+                if(Math.abs(centerRec.center.y-rec.center.y)<centerRec.size.width*2) {
+                    minDist = dist;
+                    matchRec = rec;
+                }
             }
         }
         return matchRec;
@@ -398,7 +406,7 @@ public boolean isLeft(RotatedRect rec){
     }
 
     public void label(Mat src, Point p, Scalar color) {
-        Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 100, 4, 1);
+        Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 60, 4, 1);
     }
 
     public double euclideanDistance(Point a, Point b) {
