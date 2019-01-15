@@ -23,25 +23,12 @@ public class RobotMap {
 		public static NORMAL CURRENT_MODE = new NORMAL();
 
 		public static class NORMAL {
-			public double X_FACTOR = 0.8, Y_FACTOR = 0.8, Z_FACTOR = 0.8;
 			public double X_LIMIT = 0.5, Y_LIMIT = 0.5, Z_LIMIT = 0.5;
 			public double SENSITIVITY = 0.05;
 
 			@Override
 			public String toString() {
 				return "NORMAL";
-			}
-
-			public double getX_FACTOR() {
-				return X_FACTOR;
-			}
-
-			public double getY_FACTOR() {
-				return Y_FACTOR;
-			}
-
-			public double getZ_FACTOR() {
-				return Z_FACTOR;
 			}
 
 			public double getX_LIMIT() {
@@ -63,25 +50,12 @@ public class RobotMap {
 		}
 
 		public static class PRECISION extends NORMAL {
-			public double X_FACTOR = 0.3, Y_FACTOR = 0.3, Z_FACTOR = 0.3;
 			public double X_LIMIT = 0.3, Y_LIMIT = 0.3, Z_LIMIT = 0.3;
 			public double SENSITIVITY = 0.0;
 
 			@Override
 			public String toString() {
 				return "PRECISION";
-			}
-
-			public double getX_FACTOR() {
-				return X_FACTOR;
-			}
-
-			public double getY_FACTOR() {
-				return Y_FACTOR;
-			}
-
-			public double getZ_FACTOR() {
-				return Z_FACTOR;
 			}
 
 			public double getX_LIMIT() {
@@ -102,25 +76,12 @@ public class RobotMap {
 		}
 
 		public static class SPORT extends NORMAL {
-			public double X_FACTOR = 1, Y_FACTOR = 1, Z_FACTOR = 1;
 			public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
 			public double SENSITIVITY = 0.08;
 
 			@Override
 			public String toString() {
 				return "SPORT";
-			}
-
-			public double getX_FACTOR() {
-				return X_FACTOR;
-			}
-
-			public double getY_FACTOR() {
-				return Y_FACTOR;
-			}
-
-			public double getZ_FACTOR() {
-				return Z_FACTOR;
 			}
 
 			public double getX_LIMIT() {
@@ -141,25 +102,12 @@ public class RobotMap {
 		}
 
 		public static class AUTO extends NORMAL {
-			public double X_FACTOR = 1, Y_FACTOR = 1, Z_FACTOR = 1;
 			public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
 			public double SENSITIVITY = 0.08;
 
 			@Override
 			public String toString() {
 				return "AUTO";
-			}
-
-			public double getX_FACTOR() {
-				return X_FACTOR;
-			}
-
-			public double getY_FACTOR() {
-				return Y_FACTOR;
-			}
-
-			public double getZ_FACTOR() {
-				return Z_FACTOR;
 			}
 
 			public double getX_LIMIT() {
