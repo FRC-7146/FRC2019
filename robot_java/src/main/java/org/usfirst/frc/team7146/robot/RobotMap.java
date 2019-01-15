@@ -31,6 +31,35 @@ public class RobotMap {
 			public String toString() {
 				return "NORMAL";
 			}
+
+			public double getX_FACTOR() {
+				return X_FACTOR;
+			}
+
+			public double getY_FACTOR() {
+				return Y_FACTOR;
+			}
+
+			public double getZ_FACTOR() {
+				return Z_FACTOR;
+			}
+
+			public double getX_LIMIT() {
+				return X_LIMIT;
+			}
+
+			public double getY_LIMIT() {
+				return Y_LIMIT;
+			}
+
+			public double getZ_LIMIT() {
+				return Z_LIMIT;
+			}
+
+			public double getSENSITIVITY() {
+				return SENSITIVITY;
+			}
+
 		}
 
 		public static class PRECISION extends NORMAL {
@@ -41,6 +70,34 @@ public class RobotMap {
 			@Override
 			public String toString() {
 				return "PRECISION";
+			}
+
+			public double getX_FACTOR() {
+				return X_FACTOR;
+			}
+
+			public double getY_FACTOR() {
+				return Y_FACTOR;
+			}
+
+			public double getZ_FACTOR() {
+				return Z_FACTOR;
+			}
+
+			public double getX_LIMIT() {
+				return X_LIMIT;
+			}
+
+			public double getY_LIMIT() {
+				return Y_LIMIT;
+			}
+
+			public double getZ_LIMIT() {
+				return Z_LIMIT;
+			}
+
+			public double getSENSITIVITY() {
+				return SENSITIVITY;
 			}
 		}
 
@@ -54,15 +111,71 @@ public class RobotMap {
 				return "SPORT";
 			}
 
-			public static class AUTO extends NORMAL {
-				public double X_FACTOR = 1, Y_FACTOR = 1, Z_FACTOR = 1;
-				public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
-				public double SENSITIVITY = 0.08;
+			public double getX_FACTOR() {
+				return X_FACTOR;
+			}
 
-				@Override
-				public String toString() {
-					return "AUTO";
-				}
+			public double getY_FACTOR() {
+				return Y_FACTOR;
+			}
+
+			public double getZ_FACTOR() {
+				return Z_FACTOR;
+			}
+
+			public double getX_LIMIT() {
+				return X_LIMIT;
+			}
+
+			public double getY_LIMIT() {
+				return Y_LIMIT;
+			}
+
+			public double getZ_LIMIT() {
+				return Z_LIMIT;
+			}
+
+			public double getSENSITIVITY() {
+				return SENSITIVITY;
+			}
+		}
+
+		public static class AUTO extends NORMAL {
+			public double X_FACTOR = 1, Y_FACTOR = 1, Z_FACTOR = 1;
+			public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
+			public double SENSITIVITY = 0.08;
+
+			@Override
+			public String toString() {
+				return "AUTO";
+			}
+
+			public double getX_FACTOR() {
+				return X_FACTOR;
+			}
+
+			public double getY_FACTOR() {
+				return Y_FACTOR;
+			}
+
+			public double getZ_FACTOR() {
+				return Z_FACTOR;
+			}
+
+			public double getX_LIMIT() {
+				return X_LIMIT;
+			}
+
+			public double getY_LIMIT() {
+				return Y_LIMIT;
+			}
+
+			public double getZ_LIMIT() {
+				return Z_LIMIT;
+			}
+
+			public double getSENSITIVITY() {
+				return SENSITIVITY;
 			}
 		}
 	}

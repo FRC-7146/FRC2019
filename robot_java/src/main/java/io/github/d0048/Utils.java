@@ -11,15 +11,16 @@ public class Utils {
 	private static final Logger logger = Logger.getLogger(Utils.class.getName());
 	public static boolean DEBUG = false;
 
-	public static double speedCalc(double input, double absLimit, double factor) {
-		if (Math.abs(input) > absLimit) {
+	public static double speedCalc(double input, double absLimit) {
+		double ret = (input * absLimit);
+		if (Math.abs(ret) > absLimit) {
 			if (input > 0) {
 				return absLimit;
 			} else {
 				return -absLimit;
 			}
 		}
-		return input * factor;
+		return ret;
 	}
 
 	public static void release(Mat o) {

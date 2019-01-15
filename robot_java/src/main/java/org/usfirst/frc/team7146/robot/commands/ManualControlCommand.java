@@ -25,7 +25,7 @@ public class ManualControlCommand extends CmdGroupBase {
 		if (disableBtn.get()) // Disable manual control if auto enabled
 			return;
 
-		double yIn = js.getRawAxis(0), xIn = js.getRawAxis(1), zIn = js.getRawAxis(2), grabberIn = js.getRawAxis(3),
+		double xIn = js.getRawAxis(2), yIn = -js.getRawAxis(3), zIn = js.getRawAxis(0), grabberIn = js.getRawAxis(1),
 				povIn = js.getPOV();
 		try {
 			if (povIn == -1)

@@ -44,12 +44,9 @@ public class ChasisDriveSubsystem extends Subsystem {
 
 	public void safeDriveCartesian(double ySpeed, double xSpeed, double zRotation) {
 
-		currentYSpeed = Utils.speedCalc(ySpeed, RobotMap.MOTOR.CURRENT_MODE.Y_LIMIT,
-				RobotMap.MOTOR.CURRENT_MODE.Y_FACTOR);
-		currentXSpeed = Utils.speedCalc(xSpeed, RobotMap.MOTOR.CURRENT_MODE.X_LIMIT,
-				RobotMap.MOTOR.CURRENT_MODE.X_FACTOR);
-		currentZRotation = Utils.speedCalc(zRotation, RobotMap.MOTOR.CURRENT_MODE.Z_LIMIT,
-				RobotMap.MOTOR.CURRENT_MODE.Z_FACTOR);
+		currentYSpeed = Utils.speedCalc(ySpeed, RobotMap.MOTOR.CURRENT_MODE.getY_LIMIT());
+		currentXSpeed = Utils.speedCalc(xSpeed, RobotMap.MOTOR.CURRENT_MODE.getX_LIMIT());
+		currentZRotation = Utils.speedCalc(zRotation, RobotMap.MOTOR.CURRENT_MODE.getZ_LIMIT());
 		// drive.driveCartesian(currentYSpeed, currentXSpeed, currentZRotation);
 		// TODO: Enable on release
 		write_info();
