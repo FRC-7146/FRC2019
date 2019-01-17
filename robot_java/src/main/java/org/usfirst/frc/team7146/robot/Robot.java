@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import testCommands.AccelTestCMD;
 
 public class Robot extends TimedRobot {
 	private static final java.util.logging.Logger logger = Logger.getLogger(Robot.class.getName());

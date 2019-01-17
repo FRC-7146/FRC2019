@@ -22,6 +22,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -33,6 +34,7 @@ public class StatusSubsystem extends Subsystem {
 	public static boolean DEBUG = true;
 	public Gyro mGyro = Robot.mOI.mGyro;
 	public Accelerometer mAccel = Robot.mOI.mAccelerometer;
+	public Ultrasonic mUltraS = Robot.mOI.frontDistamceSensor;
 	public double absHeading = 0;
 	public double heading = 0;
 
@@ -67,13 +69,18 @@ public class StatusSubsystem extends Subsystem {
 	}
 
 	public void write_info() {
-		SmartDashboard.putNumber("Absolute Heading", absHeading);
-		SmartDashboard.putNumber("Acc X", mAccel.getX());
-		SmartDashboard.putNumber("Acc Y", mAccel.getY());
-		SmartDashboard.putNumber("Acc Z", mAccel.getZ());
-		SmartDashboard.putBoolean("CV Status", isCVUsable);
+		/*
+		 * SmartDashboard.putNumber("Absolute Heading", absHeading);
+		 * 
+		 * SmartDashboard.putNumber("Acc X", mAccel.getX());
+		 * SmartDashboard.putNumber("Acc Y", mAccel.getY());
+		 * SmartDashboard.putNumber("Acc Z", mAccel.getZ());
+		 */
+		SmartDashboard.putNumber("Front Distance(mm)", mUltraS.getRangeMM());
+		SmartDashboard.putBoolean("CV Target Status", isCVUsable);
 	}
 
+	public static double minRecArea = 25;
 	public CameraServer mCameraServer;
 	public UsbCamera mUsbCamera;
 	CvSink cvSink;
@@ -84,6 +91,7 @@ public class StatusSubsystem extends Subsystem {
 
 	public static boolean isCVEnabled = true;
 	public static boolean isCVUsable = false;
+	public static Point target = new Point();
 
 	public void startVisionDeamon() {
 		try {
@@ -116,6 +124,7 @@ public class StatusSubsystem extends Subsystem {
 				try {
 					if (0 == cvSink.grabFrame(frame)) {
 						logger.warning("Error grabbing fram from camera");
+						isCVUsable = false;
 						continue;
 					} else {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
@@ -123,12 +132,12 @@ public class StatusSubsystem extends Subsystem {
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
 						contours.clear();
 						maxContours.clear();
-						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+						Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 						Utils.release(dst);
 						if (contours.size() >= 2) {
 							for (int i = 0; i < 2; i++) { // find 2 largest contours
 								MatOfPoint maxContour = contours.get(0);
-								double maxArea = 0;
+								double maxArea = minRecArea;// Also threshold of min cont area
 								for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 									MatOfPoint contour = iterator.next();
 									double area = Imgproc.contourArea(contour);
@@ -145,7 +154,7 @@ public class StatusSubsystem extends Subsystem {
 								for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 									MatOfPoint contour = iterator.next();
 									double area = Imgproc.contourArea(contour);
-									if (area / maxArea > 0.65) {
+									if (area / maxArea > 0.7 && area > minRecArea) {
 										maxContours.add(contour);
 										iterator.remove();
 									}
@@ -181,28 +190,31 @@ public class StatusSubsystem extends Subsystem {
 
 							// Right one: rot > -45
 							// Left one: rot < -45
-							Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
-									Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
-
 							RotatedRect matchedRec = null;
-							Point taget = null;
 							if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec,
 									possibleRects)) != null) {// if left one then search right for a right one
+								Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
+										Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
 								drawRotatedRect(frame, centerRec, new Scalar(256, 160, 256), 4);
 								Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
-								taget = new Point();
-								taget.x = (centerRec.center.x + matchedRec.center.x) / 2;
-								taget.y = (centerRec.center.y + matchedRec.center.y) / 2;
+								target.x = (centerRec.center.x + matchedRec.center.x) / 2;
+								target.y = (centerRec.center.y + matchedRec.center.y) / 2;
 								label(frame, center, new Scalar(0, 0, 0));
-								label(frame, taget, new Scalar(250, 50, 50));
+								label(frame, target, new Scalar(250, 50, 50));
+								target.x -= center.x;
+								target.y -= center.y;
+								isCVUsable = true;
+							} else {
+								isCVUsable = false;
 							}
+						} else {
+							isCVUsable = false;
 						}
 						cvSrcOut.putFrame(frame);
-						// cvSrcMask.putFrame(dst);
 						// Garbage Collection
 						Utils.release(frame);
 						Utils.release(dst);
-						if (gcIteration++ > 10) {
+						if (gcIteration++ > 60) {
 							System.gc();
 							gcIteration = 0;
 						}
@@ -236,17 +248,19 @@ public class StatusSubsystem extends Subsystem {
 	// dir=0 -> search left
 	public RotatedRect searchClosestRectMatch(boolean dir, RotatedRect centerRec, List<RotatedRect> rects) {
 		RotatedRect matchRec = null;
+		if (rects.size() < 2)
+			return null;
 		double minDist = 99999 * (dir ? 1 : -1);
 		double dist;
 		for (RotatedRect rec : rects) {
 			dist = rec.center.x - centerRec.center.x; // positive when search right
 			if (dir && !isLeft(rec) && dist > 0 && (dist) < Math.abs(minDist)) {// search right for a right one
-				if (Math.abs(centerRec.center.y - rec.center.y) < centerRec.size.width * 2) {
+				if (Math.abs(centerRec.center.y - rec.center.y) < centerRec.size.width * 3) {
 					minDist = dist;
 					matchRec = rec;
 				}
 			} else if (!dir && isLeft(rec) && dist < 0 && (dist) > minDist) { // search left for a left one
-				if (Math.abs(centerRec.center.y - rec.center.y) < centerRec.size.width * 2) {
+				if (Math.abs(centerRec.center.y - rec.center.y) < centerRec.size.width * 3) {
 					minDist = dist;
 					matchRec = rec;
 				}
@@ -294,7 +308,7 @@ public class StatusSubsystem extends Subsystem {
 				mUsbCamera.setExposureManual(EXPLOSURE);
 			else
 				mUsbCamera.setExposureAuto();
-
+			minRecArea = SmartDashboard.getNumber("Minimun Rectangle Area", minRecArea);
 		} catch (Exception e) {
 			logger.warning("[CV] poll failed:" + e.getMessage());
 		}
@@ -308,6 +322,7 @@ public class StatusSubsystem extends Subsystem {
 		SmartDashboard.putNumber("LOW S", LOWER_BOUND.val[1]);
 		SmartDashboard.putNumber("LOW V", LOWER_BOUND.val[2]);
 		SmartDashboard.putNumber("EXPLOSURE(-1: auto)", EXPLOSURE);
+		SmartDashboard.putNumber("Minimun Rectangle Area", minRecArea);
 	}
 
 	void debug(String s) {

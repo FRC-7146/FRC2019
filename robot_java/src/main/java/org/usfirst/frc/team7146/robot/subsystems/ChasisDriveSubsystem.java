@@ -11,11 +11,9 @@ import java.util.logging.Logger;
 
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.RobotMap;
-import org.usfirst.frc.team7146.robot.commands.AutoAlignCommand;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 import org.usfirst.frc.team7146.robot.commands.ManualControlCommand;
 
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -35,11 +33,20 @@ public class ChasisDriveSubsystem extends Subsystem {
 	public ChasisDriveSubsystem() {
 	}
 
-	public void pidTurn(double relativeRequestAng) {
+	public void pidTurnAbsolute(double ySpeed, double xSpeed, double requestAng) {
 		status.pullGyro();
-		double rot = relativeRequestAng - status.heading;
-		rot *= 0.05; // PID FACTOR
-		safeDriveCartesian(currentYSpeed, currentXSpeed, rot);
+		double rot = requestAng - status.absHeading;
+		rot %= 360;
+		if (Math.abs(rot) > 180) {
+			if (rot > 0)// left turn instead
+				rot = (rot - 360);
+			else if (rot < 0) {// right turn instead
+				rot = rot + 360;
+			}
+		}
+		// TODO: Calibrate
+		rot /= 60; // PID FACTOR
+		safeDriveCartesian(ySpeed, xSpeed, rot);
 	}
 
 	public void safeDriveCartesian(double ySpeed, double xSpeed, double zRotation) {
@@ -79,7 +86,6 @@ public class ChasisDriveSubsystem extends Subsystem {
 				return false;
 			}
 		};
-		// driveDaemon.addParallel(new AutoAlignCommand());
 		driveDaemon.addParallel(new ManualControlCommand());
 		driveDaemon.publicRequires(this);
 

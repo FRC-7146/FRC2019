@@ -22,19 +22,21 @@ public class ManualControlCommand extends CmdGroupBase {
 
 	@Override
 	protected void execute() {
-		if (disableBtn.get()) // Disable manual control if auto enabled
-			return;
-
 		double xIn = js.getRawAxis(2), yIn = -js.getRawAxis(3), zIn = js.getRawAxis(0), grabberIn = js.getRawAxis(1),
 				povIn = js.getPOV();
 		try {
-			if (povIn == -1)
-				Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
-			else
-				Robot.mChasisDriveSubsystem.pidTurn(Robot.mStatusSubsystem.absHeading - povIn);
 			Robot.mOI.grabberServo.set(grabberIn);
+			// Manual control overrides auto control if necessary
+			if (!AutoAlignCommand.AUTO_ALIGNING || !(Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) < 0.1)
+					|| povIn == -1) {
+				if (povIn == -1)
+					Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
+				else
+					Robot.mChasisDriveSubsystem.pidTurnAbsolute(yIn, xIn, povIn);
+			}
 		} catch (Exception e) {
-			// not installed
+			debug("Error in Manual Drive Exec:");
+			e.printStackTrace();
 		}
 		SmartDashboard.putString("Mobility Mode", RobotMap.MOTOR.CURRENT_MODE.toString());
 		SmartDashboard.putNumber("Y in", yIn);

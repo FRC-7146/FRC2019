@@ -11,6 +11,24 @@ public class Utils {
 	private static final Logger logger = Logger.getLogger(Utils.class.getName());
 	public static boolean DEBUG = false;
 
+	// TODO: It's actually 53 degree instead of 45
+	static double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
+
+	/**
+	 * @return The nearest angle needed for hatch panel
+	 */
+	public static double nearestHatchAngle(double currentAngle) {
+		double maxdiff = 360, nearestAngle = 0;
+		for (double a : allAngles) {
+			double diff = Math.abs(a - currentAngle);
+			if (diff < maxdiff) {
+				maxdiff = diff;
+				nearestAngle = a;
+			}
+		}
+		return nearestAngle;
+	}
+
 	public static double speedCalc(double input, double absLimit) {
 		double ret = (input * absLimit);
 		if (Math.abs(ret) > absLimit) {

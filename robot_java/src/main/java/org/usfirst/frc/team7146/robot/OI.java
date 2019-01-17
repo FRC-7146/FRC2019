@@ -10,6 +10,7 @@ package org.usfirst.frc.team7146.robot;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import org.usfirst.frc.team7146.robot.commands.AutoAlignCommand;
 import org.usfirst.frc.team7146.robot.commands.CmdBase;
 import org.usfirst.frc.team7146.robot.commands.ModeChangeCommand;
 
@@ -20,11 +21,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -57,10 +58,12 @@ public class OI {
 			mXboxBtnBack = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_BACK),
 			mXboxBtnStart = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_START);
 
-	public Button autoBtn = mXboxBtnLt, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb;
+	public Button autoBtn = mXboxBtnLb, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb;
 
 	public ADXRS450_Gyro mGyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	public Accelerometer mAccelerometer = new BuiltInAccelerometer(Accelerometer.Range.k4G);
+	public Ultrasonic frontDistamceSensor = new Ultrasonic(RobotMap.ULTRASONIC.FRONT_TRG,
+			RobotMap.ULTRASONIC.FRONT_ECH);
 
 	public HashMap<String, CmdBase> mCommands = new HashMap<String, CmdBase>();
 
@@ -69,10 +72,13 @@ public class OI {
 
 	public void mapOI() {
 		/* Btn bindings */
+		frontDistamceSensor.setAutomaticMode(true);
 		precisionBtn.whenActive(new ModeChangeCommand(new RobotMap.MOTOR.PRECISION()));
 		sportBtn.whenActive(new ModeChangeCommand(new RobotMap.MOTOR.SPORT()));
 		precisionBtn.whenReleased(new ModeChangeCommand(new RobotMap.MOTOR.NORMAL()));
 		sportBtn.whenReleased(new ModeChangeCommand(new RobotMap.MOTOR.NORMAL()));
+		AutoAlignCommand aa = new AutoAlignCommand();
+		autoBtn.toggleWhenPressed(aa);
 		logger.info("OI map init");
 
 	}

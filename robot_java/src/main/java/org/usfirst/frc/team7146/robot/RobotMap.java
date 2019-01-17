@@ -24,7 +24,7 @@ public class RobotMap {
 
 		public static class NORMAL {
 			public double X_LIMIT = 0.5, Y_LIMIT = 0.5, Z_LIMIT = 0.5;
-			public double SENSITIVITY = 0.05;
+			public double SENSITIVITY = 0.0;
 
 			@Override
 			public String toString() {
@@ -102,7 +102,7 @@ public class RobotMap {
 		}
 
 		public static class AUTO extends NORMAL {
-			public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
+			public double X_LIMIT = 0.5, Y_LIMIT = 0.5, Z_LIMIT = 0.5;
 			public double SENSITIVITY = 0.08;
 
 			@Override
@@ -143,9 +143,8 @@ public class RobotMap {
 		public static final int NUM_XBOX_START = 10;
 	}
 
-	public static class SENSOR {
-		public static final int NUM_LSW_UP = 1;
-		public static final int NUM_LSW_MID = 2;
-		public static final int NUM_LSW_DW = 0;
+	public static class ULTRASONIC {
+		public static int FRONT_TRG = 9;
+		public static int FRONT_ECH = 8;
 	}
 }
