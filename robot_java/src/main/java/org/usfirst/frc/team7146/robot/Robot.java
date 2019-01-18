@@ -32,9 +32,9 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		mOI = new OI();
-		// mOI.mGyro.calibrate();
+		mOI.mGyro.calibrate();
 		mOI.mGyro.reset();
-		logger.warning("Gyro init cancelled");
+		logger.warning("Gyro init OK");
 		mStatusSubsystem = new StatusSubsystem();
 		mChasisDriveSubsystem = new ChasisDriveSubsystem();
 		mOI.mapOI();

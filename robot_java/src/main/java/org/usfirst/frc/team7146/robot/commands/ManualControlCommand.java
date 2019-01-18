@@ -27,8 +27,7 @@ public class ManualControlCommand extends CmdGroupBase {
 		try {
 			Robot.mOI.grabberServo.set(grabberIn);
 			// Manual control overrides auto control if necessary
-			if (!AutoAlignCommand.AUTO_ALIGNING || !(Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) < 0.1)
-					|| povIn == -1) {
+			if (!AutoAlignCommand.AUTO_ALIGNING || manualOverAuto()) {
 				if (povIn == -1)
 					Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
 				else
@@ -44,6 +43,14 @@ public class ManualControlCommand extends CmdGroupBase {
 		SmartDashboard.putNumber("Z in", zIn);
 		SmartDashboard.putNumber("POV in", povIn);
 		SmartDashboard.putNumber("Grabber in", grabberIn);
+		SmartDashboard.putBoolean("Manual Over Auto", manualOverAuto());
+	}
+
+	public static boolean manualOverAuto() {
+		Joystick js = Robot.mOI.mJoystick0;
+		double xIn = js.getRawAxis(2), yIn = -js.getRawAxis(3), zIn = js.getRawAxis(0), grabberIn = js.getRawAxis(1),
+				povIn = js.getPOV();
+		return !(Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) < 0.1) || povIn != -1;
 	}
 
 	@Override

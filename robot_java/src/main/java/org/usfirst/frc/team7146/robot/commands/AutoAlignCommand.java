@@ -45,12 +45,13 @@ public class AutoAlignCommand extends CmdGroupBase {
 	protected void execute() {
 		if (StatusSubsystem.isCVEnabled && StatusSubsystem.isCVUsable
 				&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = StatusSubsystem.target.x))) < 15) {
-
 			dataEligiable = true;
-			double yVec = dataOffset / 16, xVec = 0;// TODO: drive forard on stable
-			Robot.mStatusSubsystem.pullGyro();
-			Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
-					Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
+			if (!ManualControlCommand.manualOverAuto()) {
+				double yVec = 0, xVec = dataOffset / 16;// TODO: drive forard on stable
+				Robot.mStatusSubsystem.pullGyro();
+				Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
+						Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
+			}
 		} else {
 			Robot.mChasisDriveSubsystem.pidTurnAbsolute(0, 0,
 					Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
