@@ -1,0 +1,292 @@
+{
+  "tabPane": [
+    {
+      "title": "7146",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "7,2": {
+            "size": [
+              6,
+              2
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///LiveWindow/Ungrouped/Scheduler",
+              "_title": "LiveWindow/Ungrouped/Scheduler"
+            }
+          },
+          "0,0": {
+            "size": [
+              4,
+              4
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Chasis",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,1": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/X in",
+                  "_title": "SmartDashboard/X in",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5.0,
+                  "Visuals/Show text": true
+                },
+                "1,1": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/X Speed",
+                  "_title": "SmartDashboard/X Speed",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5.0,
+                  "Visuals/Show text": true
+                },
+                "1,2": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/Z Rotation",
+                  "_title": "SmartDashboard/Z Rotation",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5.0,
+                  "Visuals/Show text": true
+                },
+                "0,2": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/Z in",
+                  "_title": "SmartDashboard/Z in",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5.0,
+                  "Visuals/Show text": true
+                },
+                "2,2": {
+                  "_type": "Simple Dial",
+                  "_source0": "network_table:///SmartDashboard/POV in",
+                  "_title": "POV in",
+                  "Range/Min": 0.0,
+                  "Range/Max": 360.0,
+                  "Visuals/Show value": true
+                },
+                "2,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Mobility Mode",
+                  "_title": "SmartDashboard/Mobility Mode"
+                },
+                "0,0": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/Y in",
+                  "_title": "SmartDashboard/Y in",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5.0,
+                  "Visuals/Show text": true
+                },
+                "2,1": {
+                  "_type": "Gyro",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/ADXRS450_Gyro[0]",
+                  "_title": "LiveWindow/Ungrouped/ADXRS450_Gyro[0]",
+                  "Visuals/Major tick spacing": 45.0,
+                  "Visuals/Starting angle": 180.0,
+                  "Visuals/Show tick mark ring": true
+                },
+                "1,0": {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///SmartDashboard/Y Speed",
+                  "_title": "/SmartDashboard/Y Speed",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5.0,
+                  "Visuals/Show text": true
+                }
+              }
+            }
+          },
+          "8,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Camera Properties",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/HIGH H",
+                  "_title": "SmartDashboard/HIGH H"
+                },
+                "0,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/HIGH S",
+                  "_title": "SmartDashboard/HIGH S"
+                },
+                "0,2": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/HIGH V",
+                  "_title": "SmartDashboard/HIGH V"
+                },
+                "1,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/LOW H",
+                  "_title": "SmartDashboard/LOW H"
+                },
+                "1,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/LOW S",
+                  "_title": "SmartDashboard/LOW S"
+                },
+                "1,2": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/LOW V",
+                  "_title": "SmartDashboard/LOW V"
+                },
+                "2,2": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/EXPLOSURE(-1: auto)",
+                  "_title": "SmartDashboard/EXPLOSURE(-1: auto)"
+                },
+                "2,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Minimun Rectangle Area",
+                  "_title": "SmartDashboard/Minimun Rectangle Area"
+                },
+                "2,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/CV Target Status",
+                  "_title": "SmartDashboard/CV Target Status",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              }
+            }
+          },
+          "11,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Auto Align Data Eligible",
+              "_title": "SmartDashboard/Auto Align Data Eligible",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "10,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Auto Align Enabled",
+              "_title": "SmartDashboard/Auto Align Enabled",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Simple Dial",
+              "_source0": "network_table:///SmartDashboard/Auto Noise Value",
+              "_title": "SmartDashboard/Auto Noise Value",
+              "Range/Min": 0.0,
+              "Range/Max": 100.0,
+              "Visuals/Show value": true
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Simple Dial",
+              "_source0": "network_table:///SmartDashboard/Auto Y Offset",
+              "_title": "SmartDashboard/Auto Y Offset",
+              "Range/Min": -80.0,
+              "Range/Max": 80.0,
+              "Visuals/Show value": true
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Simple Dial",
+              "_source0": "network_table:///LiveWindow/Ungrouped/Ultrasonic[8]/Value",
+              "_title": "LiveWindow/Ungrouped/Ultrasonic[8]/Value",
+              "Range/Min": 0.0,
+              "Range/Max": 100.0,
+              "Visuals/Show value": true
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Manual Over Auto",
+              "_title": "SmartDashboard/Manual Over Auto",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "4,2": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://src out",
+              "_title": "src out",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": 0.0,
+    "y": 0.0,
+    "width": 1914.0,
+    "height": 993.0
+  }
+}
