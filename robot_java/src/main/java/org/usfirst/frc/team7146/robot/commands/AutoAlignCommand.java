@@ -27,6 +27,7 @@ public class AutoAlignCommand extends CmdGroupBase {
 	@Override
 	public synchronized void start() {
 		super.start();
+		StatusSubsystem.lazyness = 0;
 		StatusSubsystem.isCVUsable = false;
 		dataEligiable = false;
 		AUTO_ALIGNING = true;
@@ -47,7 +48,7 @@ public class AutoAlignCommand extends CmdGroupBase {
 				&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = StatusSubsystem.target.x))) < 15) {
 			dataEligiable = true;
 			if (!ManualControlCommand.manualOverAuto()) {
-				double yVec = 0, xVec = dataOffset / 16;// TODO: drive forard on stable
+				double yVec = 0, xVec = dataOffset / 48;// TODO: drive forard on stable
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
 						Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
@@ -64,6 +65,7 @@ public class AutoAlignCommand extends CmdGroupBase {
 
 	@Override
 	protected void end() {
+		StatusSubsystem.lazyness = StatusSubsystem.lazynessIDLE;
 		StatusSubsystem.isCVUsable = false;
 		dataEligiable = false;
 		lastTarget = null;

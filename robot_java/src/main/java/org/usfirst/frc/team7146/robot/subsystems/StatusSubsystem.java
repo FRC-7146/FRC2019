@@ -78,6 +78,7 @@ public class StatusSubsystem extends Subsystem {
 		 */
 		SmartDashboard.putNumber("Front Distance(mm)", mUltraS.getRangeMM());
 		SmartDashboard.putBoolean("CV Target Status", isCVUsable);
+		SmartDashboard.putNumber("[CV]Lazyness", lazyness);
 	}
 
 	public static double minRecArea = 25;
@@ -87,18 +88,20 @@ public class StatusSubsystem extends Subsystem {
 	CvSource cvSrcOut, cvSrcMask;
 	int[] resolution = { 20, 50 };
 	Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
-	int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
+	public static int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
+	public static int lazynessIDLE = 2;
+	public static int lazyness = lazynessIDLE;
 
 	public static boolean isCVEnabled = true;
 	public static boolean isCVUsable = false;
-	public static Point target = new Point();
+	public static Point target = new Point(), realTarget = new Point();
 
 	public void startVisionDeamon() {
 		try {
 			mCameraServer = CameraServer.getInstance();
 			mUsbCamera = mCameraServer.startAutomaticCapture();
 			cvSink = mCameraServer.getVideo();
-			mUsbCamera.setFPS(10);
+			mUsbCamera.setFPS(18);
 			mUsbCamera.setResolution(resolution[0], resolution[1]);
 			if (EXPLOSURE == -1)
 				mUsbCamera.setExposureAuto();
@@ -112,7 +115,7 @@ public class StatusSubsystem extends Subsystem {
 			e.printStackTrace();
 		}
 		Thread t = new Thread(() -> {
-			int gcIteration = 0;
+			int gcIteration = 0, lazyIteration = 0;
 			Mat frame = new Mat();
 			Mat dst = new Mat();
 			List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -127,6 +130,15 @@ public class StatusSubsystem extends Subsystem {
 						isCVUsable = false;
 						continue;
 					} else {
+						if (lazyIteration++ < lazyness) {
+							label(frame, realTarget, new Scalar(50, 50, 250));
+							isCVUsable = false;
+							cvSrcOut.putFrame(frame);
+							Utils.release(frame);
+							// Thread.sleep(10, 0);
+							continue;
+						}
+						lazyIteration = 0;
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
 						Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
 						Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
@@ -201,6 +213,7 @@ public class StatusSubsystem extends Subsystem {
 								target.y = (centerRec.center.y + matchedRec.center.y) / 2;
 								label(frame, center, new Scalar(0, 0, 0));
 								label(frame, target, new Scalar(250, 50, 50));
+								realTarget = target.clone();
 								target.x -= center.x;
 								target.y -= center.y;
 								isCVUsable = true;

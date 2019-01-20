@@ -71,8 +71,13 @@ public class OI {
 	}
 
 	public void mapOI() {
-		/* Btn bindings */
+		mJoystick0.setXChannel(2);// xIn
+		mJoystick0.setYChannel(3);// yIn
+		mJoystick0.setZChannel(0);// zIn
+		mJoystick0.setTwistChannel(1);// grabberIn
 		frontDistamceSensor.setAutomaticMode(true);
+
+		/* Btn bindings */
 		precisionBtn.whenActive(new ModeChangeCommand(new RobotMap.MOTOR.PRECISION()));
 		sportBtn.whenActive(new ModeChangeCommand(new RobotMap.MOTOR.SPORT()));
 		precisionBtn.whenReleased(new ModeChangeCommand(new RobotMap.MOTOR.NORMAL()));
