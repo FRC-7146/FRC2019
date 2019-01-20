@@ -273,7 +273,42 @@
               "Crosshair/Crosshair color": "#FFFFFFFF",
               "Controls/Show controls": true,
               "Controls/Rotation": "NONE",
-              "compression": -1.0,
+              "compression": 100.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
+          },
+          "10,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Voltage View",
+              "_source0": "network_table:///SmartDashboard/[CV]Lazyness",
+              "_title": "SmartDashboard/[CV]Lazyness",
+              "Range/Min": 0.0,
+              "Range/Max": 3.0,
+              "Range/Center": 0.0,
+              "Visuals/Orientation": "HORIZONTAL",
+              "Visuals/Number of tick marks": 5
+            }
+          },
+          "4,4": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 0",
+              "_title": "USB Camera 0",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 100.0,
               "fps": -1,
               "imageWidth": -1,
               "imageHeight": -1
@@ -286,7 +321,7 @@
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1914.0,
-    "height": 993.0
+    "width": 1920.0,
+    "height": 1080.0
   }
 }
