@@ -10,7 +10,7 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "7,2": {
+          "0,4": {
             "size": [
               6,
               2
@@ -99,7 +99,7 @@
                 "2,1": {
                   "_type": "Gyro",
                   "_source0": "network_table:///LiveWindow/Ungrouped/ADXRS450_Gyro[0]",
-                  "_title": "LiveWindow/Ungrouped/ADXRS450_Gyro[0]",
+                  "_title": "ADXRS450_Gyro[0]",
                   "Visuals/Major tick spacing": 45.0,
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true
@@ -172,7 +172,7 @@
                 "2,0": {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///SmartDashboard/CV Target Status",
-                  "_title": "SmartDashboard/CV Target Status",
+                  "_title": "CV Target Status",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 }
@@ -260,10 +260,10 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "4,2": {
+          "7,2": {
             "size": [
-              3,
-              2
+              5,
+              5
             ],
             "content": {
               "_type": "Camera Stream",
@@ -294,25 +294,6 @@
               "Visuals/Orientation": "HORIZONTAL",
               "Visuals/Number of tick marks": 5
             }
-          },
-          "4,4": {
-            "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://USB Camera 0",
-              "_title": "USB Camera 0",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 100.0,
-              "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
-            }
           }
         }
       }
@@ -321,7 +302,7 @@
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1920.0,
-    "height": 1080.0
+    "width": 1916.0,
+    "height": 1022.0
   }
 }
