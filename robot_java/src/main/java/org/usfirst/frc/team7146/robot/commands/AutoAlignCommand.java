@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import org.opencv.core.Point;
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.RobotMap;
-import org.usfirst.frc.team7146.robot.subsystems.StatusSubsystem;
+import org.usfirst.frc.team7146.robot.subsystems.VisionSubsystem;
 
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,18 +20,18 @@ public class AutoAlignCommand extends CmdGroupBase {
 
 	public AutoAlignCommand() {
 		super("Auto Align", 100);
-		addParallel(new ModeChangeCommand(new RobotMap.MOTOR.AUTO()));
 		writeStatus();
 	}
 
 	@Override
 	public synchronized void start() {
 		super.start();
-		StatusSubsystem.lazyness = 0;
-		StatusSubsystem.isCVUsable = false;
+		VisionSubsystem.lazyness = 0;
+		VisionSubsystem.isCVUsable = false;
+		RobotMap.MOTOR.CURRENT_MODE = new RobotMap.MOTOR.AUTO();
 		dataEligiable = false;
 		AUTO_ALIGNING = true;
-		lastTarget = StatusSubsystem.target.clone();
+		lastTarget = VisionSubsystem.target.clone();
 		logger.warning("Auto Align");
 		writeStatus();
 	}
@@ -44,8 +44,8 @@ public class AutoAlignCommand extends CmdGroupBase {
 
 	@Override
 	protected void execute() {
-		if (StatusSubsystem.isCVEnabled && StatusSubsystem.isCVUsable
-				&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = StatusSubsystem.target.x))) < 15) {
+		if (VisionSubsystem.isCVEnabled && VisionSubsystem.isCVUsable
+				&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = VisionSubsystem.target.x))) < 15) {
 			dataEligiable = true;
 			if (!ManualControlCommand.manualOverAuto()) {
 				double yVec = 0, xVec = dataOffset / 48;// TODO: drive forard on stable
@@ -58,15 +58,15 @@ public class AutoAlignCommand extends CmdGroupBase {
 					Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
 			dataEligiable = false;
 		}
-		lastTarget = StatusSubsystem.target.clone();
+		lastTarget = VisionSubsystem.target.clone();
 		writeStatus();
 
 	}
 
 	@Override
 	protected void end() {
-		StatusSubsystem.lazyness = StatusSubsystem.lazynessIDLE;
-		StatusSubsystem.isCVUsable = false;
+		VisionSubsystem.lazyness = VisionSubsystem.lazynessIDLE;
+		VisionSubsystem.isCVUsable = false;
 		dataEligiable = false;
 		lastTarget = null;
 		AUTO_ALIGNING = false;

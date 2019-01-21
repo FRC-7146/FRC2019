@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.usfirst.frc.team7146.robot.commands.CmdBase;
 import org.usfirst.frc.team7146.robot.subsystems.ChasisDriveSubsystem;
 import org.usfirst.frc.team7146.robot.subsystems.StatusSubsystem;
+import org.usfirst.frc.team7146.robot.subsystems.VisionSubsystem;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
 	public static OI mOI;
 	public static ChasisDriveSubsystem mChasisDriveSubsystem;
 	public static StatusSubsystem mStatusSubsystem;
+	public static VisionSubsystem mVisionSubsystem;
 
 	Command mAutonomousCommand;
 	SendableChooser<Command> mchooser = new SendableChooser<>();
@@ -36,6 +38,7 @@ public class Robot extends TimedRobot {
 		mOI.mGyro.reset();
 		logger.warning("Gyro init OK");
 		mStatusSubsystem = new StatusSubsystem();
+		mVisionSubsystem = new VisionSubsystem();
 		mChasisDriveSubsystem = new ChasisDriveSubsystem();
 		mOI.mapOI();
 	}
