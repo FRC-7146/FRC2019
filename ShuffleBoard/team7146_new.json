@@ -10,10 +10,10 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "0,4": {
+          "0,5": {
             "size": [
               6,
-              2
+              1
             ],
             "content": {
               "_type": "Network Table Tree",
@@ -36,7 +36,7 @@
                 "0,1": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/X in",
-                  "_title": "SmartDashboard/X in",
+                  "_title": "X in",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
                   "Range/Center": 0.0,
@@ -46,7 +46,7 @@
                 "1,1": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/X Speed",
-                  "_title": "SmartDashboard/X Speed",
+                  "_title": "X Speed",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
                   "Range/Center": 0.0,
@@ -56,7 +56,7 @@
                 "1,2": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Z Rotation",
-                  "_title": "SmartDashboard/Z Rotation",
+                  "_title": "Z Rotation",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
                   "Range/Center": 0.0,
@@ -66,7 +66,7 @@
                 "0,2": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Z in",
-                  "_title": "SmartDashboard/Z in",
+                  "_title": "Z in",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
                   "Range/Center": 0.0,
@@ -84,12 +84,12 @@
                 "2,0": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/Mobility Mode",
-                  "_title": "SmartDashboard/Mobility Mode"
+                  "_title": "Mobility Mode"
                 },
                 "0,0": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Y in",
-                  "_title": "SmartDashboard/Y in",
+                  "_title": "Y in",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
                   "Range/Center": 0.0,
@@ -107,7 +107,7 @@
                 "1,0": {
                   "_type": "Number Bar",
                   "_source0": "network_table:///SmartDashboard/Y Speed",
-                  "_title": "/SmartDashboard/Y Speed",
+                  "_title": "Y Speed",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
                   "Range/Center": 0.0,
@@ -132,42 +132,42 @@
                 "0,0": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/HIGH H",
-                  "_title": "SmartDashboard/HIGH H"
+                  "_title": "HIGH H"
                 },
                 "0,1": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/HIGH S",
-                  "_title": "SmartDashboard/HIGH S"
+                  "_title": "HIGH S"
                 },
                 "0,2": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/HIGH V",
-                  "_title": "SmartDashboard/HIGH V"
+                  "_title": "HIGH V"
                 },
                 "1,0": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/LOW H",
-                  "_title": "SmartDashboard/LOW H"
+                  "_title": "LOW H"
                 },
                 "1,1": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/LOW S",
-                  "_title": "SmartDashboard/LOW S"
+                  "_title": "LOW S"
                 },
                 "1,2": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/LOW V",
-                  "_title": "SmartDashboard/LOW V"
+                  "_title": "LOW V"
                 },
                 "2,2": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/EXPLOSURE(-1: auto)",
-                  "_title": "SmartDashboard/EXPLOSURE(-1: auto)"
+                  "_title": "EXPLOSURE(-1: auto)"
                 },
                 "2,1": {
                   "_type": "Text View",
                   "_source0": "network_table:///SmartDashboard/Minimun Rectangle Area",
-                  "_title": "SmartDashboard/Minimun Rectangle Area"
+                  "_title": "Minimun Rectangle Area"
                 },
                 "2,0": {
                   "_type": "Boolean Box",
@@ -187,7 +187,7 @@
             "content": {
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Auto Align Data Eligible",
-              "_title": "SmartDashboard/Auto Align Data Eligible",
+              "_title": "Auto Align Data Eligible",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -200,7 +200,7 @@
             "content": {
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Auto Align Enabled",
-              "_title": "SmartDashboard/Auto Align Enabled",
+              "_title": "Auto Align Enabled",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
@@ -213,7 +213,7 @@
             "content": {
               "_type": "Simple Dial",
               "_source0": "network_table:///SmartDashboard/Auto Noise Value",
-              "_title": "SmartDashboard/Auto Noise Value",
+              "_title": "Auto Noise Value",
               "Range/Min": 0.0,
               "Range/Max": 100.0,
               "Visuals/Show value": true
@@ -227,7 +227,7 @@
             "content": {
               "_type": "Simple Dial",
               "_source0": "network_table:///SmartDashboard/Auto Y Offset",
-              "_title": "SmartDashboard/Auto Y Offset",
+              "_title": "Auto Y Offset",
               "Range/Min": -80.0,
               "Range/Max": 80.0,
               "Visuals/Show value": true
@@ -241,7 +241,7 @@
             "content": {
               "_type": "Simple Dial",
               "_source0": "network_table:///LiveWindow/Ungrouped/Ultrasonic[8]/Value",
-              "_title": "LiveWindow/Ungrouped/Ultrasonic[8]/Value",
+              "_title": "Ultrasonic[8]/Value",
               "Range/Min": 0.0,
               "Range/Max": 100.0,
               "Visuals/Show value": true
@@ -255,15 +255,15 @@
             "content": {
               "_type": "Boolean Box",
               "_source0": "network_table:///SmartDashboard/Manual Over Auto",
-              "_title": "SmartDashboard/Manual Over Auto",
+              "_title": "Manual Over Auto",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
           },
           "7,2": {
             "size": [
-              5,
-              5
+              6,
+              4
             ],
             "content": {
               "_type": "Camera Stream",
@@ -287,22 +287,64 @@
             "content": {
               "_type": "Voltage View",
               "_source0": "network_table:///SmartDashboard/[CV]Lazyness",
-              "_title": "SmartDashboard/[CV]Lazyness",
+              "_title": "[CV]Lazyness",
               "Range/Min": 0.0,
               "Range/Max": 3.0,
               "Range/Center": 0.0,
               "Visuals/Orientation": "HORIZONTAL",
               "Visuals/Number of tick marks": 5
             }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Primary Controler:",
+              "_title": "SmartDashboard/Primary Controler:"
+            }
+          },
+          "4,2": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://rPi Camera 0",
+              "_title": "rPi Camera 0",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 100.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
           }
         }
+      }
+    },
+    {
+      "title": "Debug Information",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {}
       }
     }
   ],
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1916.0,
-    "height": 1022.0
+    "width": 1918.0,
+    "height": 1051.0
   }
 }
