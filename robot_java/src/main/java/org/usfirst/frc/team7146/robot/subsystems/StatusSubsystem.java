@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.d0048.Utils;
 
+//TODO: Enable positions on release
 public class StatusSubsystem extends Subsystem {
 	private static final Logger logger = Logger.getLogger(StatusSubsystem.class.getName());
 	public static boolean DEBUG = true;
@@ -40,7 +41,7 @@ public class StatusSubsystem extends Subsystem {
 	public Ultrasonic mUltraS = Robot.mOI.frontDistamceSensor;
 	public double absHeading = 0;
 	public double heading = 0;
-	public TalonSRX mTalon1 = Robot.mOI.mTalon1;
+	// public TalonSRX mTalon1 = Robot.mOI.mTalon1;
 
 	public StatusSubsystem() {
 		super();
@@ -58,12 +59,12 @@ public class StatusSubsystem extends Subsystem {
 		};
 		statusDaemon.publicRequires(this);
 		this.setDefaultCommand(statusDaemon);
-		setPosition(0);
+		// setPosition(0);
 		startBetaIMULocalization();
 	}
 
 	public final void write_info() {
-		SmartDashboard.putNumber("Encoder Position", getPosition());
+		// SmartDashboard.putNumber("Encoder Position", getPosition());
 		SmartDashboard.putNumber("accXofs", accXofs);
 		SmartDashboard.putNumber("accX", mAccel.getX() - accXofs);
 	}
@@ -85,14 +86,13 @@ public class StatusSubsystem extends Subsystem {
 		accXofs /= count;
 	}
 
-	public double getPosition() {
-		return mTalon1.getSensorCollection().getQuadraturePosition();
-	}
-
-	public ErrorCode setPosition(int newPosition) {
-		return mTalon1.getSensorCollection().setQuadraturePosition(newPosition, 19);
-	}
-
+	/*
+	 * public double getPosition() { return
+	 * mTalon1.getSensorCollection().getQuadraturePosition(); }
+	 * 
+	 * public ErrorCode setPosition(int newPosition) { return
+	 * mTalon1.getSensorCollection().setQuadraturePosition(newPosition, 19); }
+	 */
 	public void pullGyro() {
 		heading = mGyro.getAngle();
 		absHeading = (360 + (heading % 360)) % 360;// Since it could return (-inf,inf)

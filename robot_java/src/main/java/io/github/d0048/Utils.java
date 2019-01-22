@@ -11,6 +11,15 @@ public class Utils {
 	private static final Logger logger = Logger.getLogger(Utils.class.getName());
 	public static boolean DEBUG = false;
 
+	public static double[] absVecRet = { 0, 0 };// Y,X
+
+	public static final double[] absoluteVector2Relative(double relY, double relX, double absHeading) {
+		absHeading = (absHeading / 360) * 2 * Math.PI;
+		absVecRet[1] = Math.cos(absHeading) * relX - Math.sin(absHeading) * relY; // cal X
+		absVecRet[0] = Math.sin(absHeading) * relX + Math.cos(absHeading) * relY; // cal Y
+		return absVecRet;
+	}
+
 	// TODO: It's actually 53 degree instead of 45
 	static final double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
 

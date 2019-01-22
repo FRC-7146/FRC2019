@@ -32,33 +32,51 @@ public class ManualControlCommand extends CmdGroupBase {
 			Robot.mOI.grabberServo.set(Math.max(grabberIn, throttle));
 			// Manual control overrides auto control if necessary
 			if (!AutoAlignCommand.AUTO_ALIGNING || manualOverAuto()) {
-				if (povIn == -1)
-					Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
-				else
+				if (povIn != -1) {
 					Robot.mChasisDriveSubsystem.pidTurnAbsolute(yIn, xIn, povIn);
+				} else if (isJS1Active()) {
+					Robot.mChasisDriveSubsystem.absoluteSafeDriveCartesian(yIn1, xIn1, zIn1);
+				} else {
+					Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
+				}
 			}
 		} catch (Exception e) {
 			debug("Error in Manual Drive Exec:");
 			e.printStackTrace();
 		}
 		SmartDashboard.putString("Mobility Mode", RobotMap.MOTOR.CURRENT_MODE.toString());
-		SmartDashboard.putNumber("Y in", yIn);
-		SmartDashboard.putNumber("X in", xIn);
-		SmartDashboard.putNumber("Z in", zIn);
-		SmartDashboard.putNumber("POV in", povIn);
+		if (isJS1Active()) {
+			SmartDashboard.putNumber("Y in", yIn1);
+			SmartDashboard.putNumber("X in", xIn1);
+			SmartDashboard.putNumber("Z in", zIn1);
+			SmartDashboard.putNumber("POV in", povIn1);
+			SmartDashboard.putString("Primary Controler:", js1.getName());
+		} else {
+			SmartDashboard.putNumber("Y in", yIn);
+			SmartDashboard.putNumber("X in", xIn);
+			SmartDashboard.putNumber("Z in", zIn);
+			SmartDashboard.putNumber("POV in", povIn);
+			SmartDashboard.putString("Primary Controler:", js0.getName());
+		}
 		SmartDashboard.putNumber("Grabber in", grabberIn);
 		SmartDashboard.putBoolean("Manual Over Auto", manualOverAuto());
 	}
 
 	public static final boolean manualOverAuto() {
-		Joystick js0 = Robot.mOI.mJoystick0, js1 = Robot.mOI.mJoystick1;
-		;
-		double xIn = js0.getRawAxis(2), yIn = -js0.getRawAxis(3), zIn = js0.getRawAxis(0),
-				grabberIn = js0.getRawAxis(1), povIn = js0.getPOV();
+		return isJS0Active() || isJS1Active();
+	}
+
+	public static final boolean isJS0Active() {
+		Joystick js0 = Robot.mOI.mJoystick0;
+		double xIn = js0.getRawAxis(2), yIn = -js0.getRawAxis(3), zIn = js0.getRawAxis(0);
+		return (Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) > 0.1);
+	}
+
+	public static final boolean isJS1Active() {
+		Joystick js1 = Robot.mOI.mJoystick1;
 		double xIn1 = js1.getRawAxis(0), yIn1 = -js1.getRawAxis(1), zIn1 = js1.getRawAxis(2),
 				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
-		return (Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) > 0.1) || povIn != -1
-				|| (Math.abs(xIn1) + Math.abs(yIn1) + Math.abs(zIn1) > 0.1) || povIn1 != -1;
+		return (Math.abs(xIn1) + Math.abs(yIn1) + Math.abs(zIn1) > 0.1) || povIn1 != -1;
 	}
 
 	@Override

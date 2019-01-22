@@ -14,6 +14,7 @@ import org.usfirst.frc.team7146.robot.RobotMap;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 import org.usfirst.frc.team7146.robot.commands.ManualControlCommand;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -50,13 +51,23 @@ public class ChasisDriveSubsystem extends Subsystem {
 	}
 
 	public void safeDriveCartesian(double ySpeed, double xSpeed, double zRotation) {
-
 		currentYSpeed = Utils.speedCalc(ySpeed, RobotMap.MOTOR.CURRENT_MODE.getY_LIMIT());
 		currentXSpeed = Utils.speedCalc(xSpeed, RobotMap.MOTOR.CURRENT_MODE.getX_LIMIT());
 		currentZRotation = Utils.speedCalc(zRotation, RobotMap.MOTOR.CURRENT_MODE.getZ_LIMIT());
 		// drive.driveCartesian(currentYSpeed, currentXSpeed, currentZRotation);
 		// TODO: Enable on release
 		write_info();
+	}
+
+	// Notice here X,Y inputs are global coords relative to initial(operator)
+	// position
+	public void absoluteSafeDriveCartesian(double ySpeed, double xSpeed, double zRotation) {
+		// Perform a -\theta rotation to vector
+		status.pullGyro();
+		double[] rotated = Utils.absoluteVector2Relative(ySpeed, xSpeed, status.absHeading);
+		safeDriveCartesian(rotated[0], rotated[1], zRotation);
+		System.out.println(ySpeed + ", " + xSpeed);
+		System.out.println(rotated[1] + ", " + rotated[0]);
 	}
 
 	public void stop() {

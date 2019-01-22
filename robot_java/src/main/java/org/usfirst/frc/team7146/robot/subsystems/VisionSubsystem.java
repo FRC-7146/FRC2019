@@ -90,7 +90,7 @@ public class VisionSubsystem extends Subsystem {
     public UsbCamera mUsbCamera;
     CvSink cvSink;
     CvSource cvSrcOut, cvSrcMask;
-    int[] resolution = { 20, 50 };
+    int[] resolution = { 40, 100 };
     Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
     public static int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
     public static int lazynessIDLE = 2;
@@ -105,7 +105,7 @@ public class VisionSubsystem extends Subsystem {
             mCameraServer = CameraServer.getInstance();
             mUsbCamera = mCameraServer.startAutomaticCapture();
             cvSink = mCameraServer.getVideo();
-            mUsbCamera.setFPS(18);
+            mUsbCamera.setFPS(25);
             mUsbCamera.setResolution(resolution[0], resolution[1]);
             if (EXPLOSURE == -1)
                 mUsbCamera.setExposureAuto();

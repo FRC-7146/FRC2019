@@ -64,10 +64,10 @@ public class OI {
 	// 0->x 1->y 2->z 3->slider
 	// trigger->0 missle->1 others follow (naming-1)
 	public Joystick mJoystick1 = new Joystick(1);// Extreme 3D
-	public Button mTrigger = new JoystickButton(mJoystick1, 0), mMissle = new JoystickButton(mJoystick1, 1),
-			mBtn3 = new JoystickButton(mJoystick1, 2), mBtn4 = new JoystickButton(mJoystick1, 3),
-			mBtn5 = new JoystickButton(mJoystick1, 4), mBtn6 = new JoystickButton(mJoystick1, 5),
-			mBtn7 = new JoystickButton(mJoystick1, 6);
+	public Button mTrigger = new JoystickButton(mJoystick1, 1), mMissle = new JoystickButton(mJoystick1, 2),
+			mBtn3 = new JoystickButton(mJoystick1, 3), mBtn4 = new JoystickButton(mJoystick1, 4),
+			mBtn5 = new JoystickButton(mJoystick1, 5), mBtn6 = new JoystickButton(mJoystick1, 6),
+			mBtn7 = new JoystickButton(mJoystick1, 7);
 
 	public Button autoBtn = mXboxBtnLb, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb;
 
@@ -75,7 +75,8 @@ public class OI {
 	public Accelerometer mAccelerometer = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 	public Ultrasonic frontDistamceSensor = new Ultrasonic(RobotMap.ULTRASONIC.FRONT_TRG,
 			RobotMap.ULTRASONIC.FRONT_ECH);
-	public TalonSRX mTalon1 = new TalonSRX(0);
+	// TODO: Enable positions on release
+	// public TalonSRX mTalon1 = new TalonSRX(0);
 
 	public HashMap<String, CmdBase> mCommands = new HashMap<String, CmdBase>();
 
@@ -88,7 +89,8 @@ public class OI {
 		mJoystick0.setZChannel(0);// zIn
 		mJoystick0.setTwistChannel(1);// grabberIn
 		frontDistamceSensor.setAutomaticMode(true);
-		mTalon1.set(ControlMode.PercentOutput, 0.0); // Disable output coz not needed
+		// TODO: Enable positions on release
+		// mTalon1.set(ControlMode.PercentOutput, 0.0); // Disable output coz not needed
 
 		/* Btn bindings */
 		precisionBtn.whenActive(new ModeChangeCommand(new RobotMap.MOTOR.PRECISION()));
