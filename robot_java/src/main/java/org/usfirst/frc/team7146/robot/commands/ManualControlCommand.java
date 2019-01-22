@@ -13,19 +13,23 @@ public class ManualControlCommand extends CmdGroupBase {
 	private static final Logger logger = Logger.getLogger(ManualControlCommand.class.getName());
 	public static boolean DEBUG = true;
 
-	public Joystick js = Robot.mOI.mJoystick0;
+	public Joystick js0 = Robot.mOI.mJoystick0;
 	public Button sportBtn = Robot.mOI.sportBtn, precisionBtn = Robot.mOI.precisionBtn, disableBtn = Robot.mOI.autoBtn;;
+	public Joystick js1 = Robot.mOI.mJoystick1;
 
+	// 0->x 1->y 2->z 3->slider
 	public ManualControlCommand() {
 		super("Manual Control", 100);
 	}
 
 	@Override
 	protected void execute() {
-		double xIn = js.getRawAxis(2), yIn = -js.getRawAxis(3), zIn = js.getRawAxis(0), grabberIn = js.getRawAxis(1),
-				povIn = js.getPOV();
+		double xIn = js0.getRawAxis(2), yIn = -js0.getRawAxis(3), zIn = js0.getRawAxis(0),
+				grabberIn = js0.getRawAxis(1), povIn = js0.getPOV();
+		double xIn1 = js1.getRawAxis(0), yIn1 = -js1.getRawAxis(1), zIn1 = js1.getRawAxis(2),
+				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
 		try {
-			Robot.mOI.grabberServo.set(grabberIn);
+			Robot.mOI.grabberServo.set(Math.max(grabberIn, throttle));
 			// Manual control overrides auto control if necessary
 			if (!AutoAlignCommand.AUTO_ALIGNING || manualOverAuto()) {
 				if (povIn == -1)
@@ -47,10 +51,14 @@ public class ManualControlCommand extends CmdGroupBase {
 	}
 
 	public static boolean manualOverAuto() {
-		Joystick js = Robot.mOI.mJoystick0;
-		double xIn = js.getRawAxis(2), yIn = -js.getRawAxis(3), zIn = js.getRawAxis(0), grabberIn = js.getRawAxis(1),
-				povIn = js.getPOV();
-		return !(Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) < 0.1) || povIn != -1;
+		Joystick js0 = Robot.mOI.mJoystick0, js1 = Robot.mOI.mJoystick1;
+		;
+		double xIn = js0.getRawAxis(2), yIn = -js0.getRawAxis(3), zIn = js0.getRawAxis(0),
+				grabberIn = js0.getRawAxis(1), povIn = js0.getPOV();
+		double xIn1 = js1.getRawAxis(0), yIn1 = -js1.getRawAxis(1), zIn1 = js1.getRawAxis(2),
+				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
+		return (Math.abs(xIn) + Math.abs(yIn) + Math.abs(zIn) > 0.1) || povIn != -1
+				|| (Math.abs(xIn1) + Math.abs(yIn1) + Math.abs(zIn1) > 0.1) || povIn1 != -1;
 	}
 
 	@Override

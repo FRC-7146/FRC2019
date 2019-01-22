@@ -44,7 +44,7 @@ public class OI {
 	// frontRightMotor, rearRightMotor);
 	public MecanumDrive drive = null;
 
-	public Joystick mJoystick0 = new Joystick(0);
+	public Joystick mJoystick0 = new Joystick(0);// Dual Action
 	public Button mXboxBtnA = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_A),
 			mXboxBtnB = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_B),
 			mXboxBtnX = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_X),
@@ -57,6 +57,13 @@ public class OI {
 			mXboxBtnRghtStk = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_RIGHT_STICK_BTN),
 			mXboxBtnBack = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_BACK),
 			mXboxBtnStart = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_START);
+	// 0->x 1->y 2->z 3->slider
+	// trigger->0 missle->1 others follow (naming-1)
+	public Joystick mJoystick1 = new Joystick(1);// Extreme 3D
+	public Button mTrigger = new JoystickButton(mJoystick1, 0), mMissle = new JoystickButton(mJoystick1, 1),
+			mBtn3 = new JoystickButton(mJoystick1, 2), mBtn4 = new JoystickButton(mJoystick1, 3),
+			mBtn5 = new JoystickButton(mJoystick1, 4), mBtn6 = new JoystickButton(mJoystick1, 5),
+			mBtn7 = new JoystickButton(mJoystick1, 6);
 
 	public Button autoBtn = mXboxBtnLb, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb;
 
@@ -84,6 +91,7 @@ public class OI {
 		sportBtn.whenReleased(new ModeChangeCommand(new RobotMap.MOTOR.NORMAL()));
 		AutoAlignCommand aa = new AutoAlignCommand();
 		autoBtn.toggleWhenPressed(aa);
+		mTrigger.toggleWhenPressed(aa);
 		logger.info("OI map init");
 
 	}
