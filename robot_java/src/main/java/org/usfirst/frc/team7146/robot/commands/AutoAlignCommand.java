@@ -75,7 +75,7 @@ public class AutoAlignCommand extends CmdGroupBase {
 		logger.warning("Auto Align End");
 	}
 
-	public void writeStatus() {
+	public final void writeStatus() {
 		SmartDashboard.putBoolean("Auto Align Enabled", AUTO_ALIGNING);
 		SmartDashboard.putBoolean("Auto Align Data Eligible", dataEligiable);
 		SmartDashboard.putNumber("Auto Y Offset", dataOffset);

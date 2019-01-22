@@ -63,7 +63,7 @@ public class ChasisDriveSubsystem extends Subsystem {
 		safeDriveCartesian(0, 0, 0);
 	}
 
-	public void write_info() {
+	public final void write_info() {
 		SmartDashboard.putNumber("Y Speed", currentYSpeed);
 		SmartDashboard.putNumber("X Speed", currentXSpeed);
 		SmartDashboard.putNumber("Z Rotation", currentZRotation);

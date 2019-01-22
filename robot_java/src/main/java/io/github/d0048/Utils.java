@@ -12,12 +12,12 @@ public class Utils {
 	public static boolean DEBUG = false;
 
 	// TODO: It's actually 53 degree instead of 45
-	static double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
+	static final double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
 
 	/**
 	 * @return The nearest angle needed for hatch panel
 	 */
-	public static double nearestHatchAngle(double currentAngle) {
+	public static final double nearestHatchAngle(double currentAngle) {
 		double maxdiff = 360, nearestAngle = 0;
 		for (double a : allAngles) {
 			double diff = Math.abs(a - currentAngle);
@@ -29,7 +29,7 @@ public class Utils {
 		return nearestAngle;
 	}
 
-	public static double speedCalc(double input, double absLimit) {
+	public static final double speedCalc(double input, double absLimit) {
 		double ret = (input * absLimit);
 		if (Math.abs(ret) > absLimit) {
 			if (input > 0) {
@@ -41,7 +41,7 @@ public class Utils {
 		return ret;
 	}
 
-	public static void release(Mat o) {
+	public static final void release(Mat o) {
 		if (o != null) {
 			try {
 				if (!((Mat) o).empty())
@@ -51,7 +51,7 @@ public class Utils {
 		}
 	}
 
-	public static void release(Object[] os) {
+	public static final void release(Object[] os) {
 		for (Object o : os) {
 			try {
 				if (!((Mat) o).empty())
@@ -61,7 +61,7 @@ public class Utils {
 		}
 	}
 
-	public static void release(List<Mat> os) {
+	public static final void release(List<Mat> os) {
 		if (!os.isEmpty())
 			for (Object o : os) {
 				try {
@@ -72,7 +72,7 @@ public class Utils {
 			}
 	}
 
-	public static void releaseMoPs(List<MatOfPoint> os) {
+	public static final void releaseMoPs(List<MatOfPoint> os) {
 		if (!os.isEmpty())
 			for (Object o : os) {
 				try {
@@ -83,7 +83,7 @@ public class Utils {
 			}
 	}
 
-	public static void releaseMoP(MatOfPoint o) {
+	public static final void releaseMoP(MatOfPoint o) {
 		try {
 			if (!((MatOfPoint) o).empty())
 				((MatOfPoint) o).release();
@@ -91,7 +91,7 @@ public class Utils {
 		}
 	}
 
-	public static void releaseMoP2fs(List<MatOfPoint2f> os) {
+	public static final void releaseMoP2fs(List<MatOfPoint2f> os) {
 		if (!os.isEmpty())
 			for (MatOfPoint2f o : os) {
 				try {
@@ -102,7 +102,7 @@ public class Utils {
 			}
 	}
 
-	public static void releaseMoP2f(MatOfPoint2f o) {
+	public static final void releaseMoP2f(MatOfPoint2f o) {
 		try {
 			if (!o.empty())
 				((MatOfPoint2f) o).release();

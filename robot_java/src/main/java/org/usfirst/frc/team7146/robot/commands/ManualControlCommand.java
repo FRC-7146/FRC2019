@@ -50,7 +50,7 @@ public class ManualControlCommand extends CmdGroupBase {
 		SmartDashboard.putBoolean("Manual Over Auto", manualOverAuto());
 	}
 
-	public static boolean manualOverAuto() {
+	public static final boolean manualOverAuto() {
 		Joystick js0 = Robot.mOI.mJoystick0, js1 = Robot.mOI.mJoystick1;
 		;
 		double xIn = js0.getRawAxis(2), yIn = -js0.getRawAxis(3), zIn = js0.getRawAxis(0),

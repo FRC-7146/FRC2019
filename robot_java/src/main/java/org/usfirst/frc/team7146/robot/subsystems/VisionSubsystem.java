@@ -50,12 +50,12 @@ public class VisionSubsystem extends Subsystem {
         startVisionDeamon();
     }
 
-    public void write_info() {
+    public final void write_info() {
         SmartDashboard.putBoolean("CV Target Status", isCVUsable);
         SmartDashboard.putNumber("[CV]Lazyness", lazyness);
     }
 
-    public void putCVInfo() {
+    public final void putCVInfo() {
         SmartDashboard.putNumber("HIGH H", UPPER_BOUND.val[0]);
         SmartDashboard.putNumber("HIGH S", UPPER_BOUND.val[1]);
         SmartDashboard.putNumber("HIGH V", UPPER_BOUND.val[2]);
@@ -66,7 +66,7 @@ public class VisionSubsystem extends Subsystem {
         SmartDashboard.putNumber("Minimun Rectangle Area", minRecArea);
     }
 
-    public void pollSDBConfig() {
+    public final void pollSDBConfig() {
         try {
             UPPER_BOUND.val[0] = SmartDashboard.getNumber("HIGH H", UPPER_BOUND.val[0]);
             UPPER_BOUND.val[1] = SmartDashboard.getNumber("HIGH S", UPPER_BOUND.val[1]);
@@ -248,14 +248,14 @@ public class VisionSubsystem extends Subsystem {
 
     static Point[] vertices = new Point[4];
 
-    public static void drawRotatedRect(Mat image, RotatedRect rotatedRect, Scalar color, int thickness) {
+    static final void drawRotatedRect(Mat image, RotatedRect rotatedRect, Scalar color, int thickness) {
         rotatedRect.points(vertices);
         MatOfPoint points = new MatOfPoint(vertices);
         Imgproc.drawContours(image, Arrays.asList(points), -1, color, thickness);
         Utils.releaseMoP(points);
     }
 
-    public boolean isLeft(RotatedRect rec) {
+    static final boolean isLeft(RotatedRect rec) {
         return rec.angle < -45;
     }
 
@@ -263,7 +263,7 @@ public class VisionSubsystem extends Subsystem {
     // Left one: rot < -45
     // dir=1 -> search right
     // dir=0 -> search left
-    public RotatedRect searchClosestRectMatch(boolean dir, RotatedRect centerRec, List<RotatedRect> rects) {
+    static final RotatedRect searchClosestRectMatch(boolean dir, RotatedRect centerRec, List<RotatedRect> rects) {
         RotatedRect matchRec = null;
         if (rects.size() < 2)
             return null;
@@ -286,18 +286,18 @@ public class VisionSubsystem extends Subsystem {
         return matchRec;
     }
 
-    public Point centerOf(Mat m) {
+    static final Point centerOf(Mat m) {
         Point center = new Point();
         center.x = m.width() / 2;
         center.y = m.height() / 2;
         return center;
     }
 
-    public void label(Mat src, Point p, Scalar color) {
+    static final void label(Mat src, Point p, Scalar color) {
         Imgproc.drawMarker(src, p, color, Imgproc.MARKER_CROSS, 8, 2, 1);
     }
 
-    public double euclideanDistance(Point a, Point b) {
+    static final double euclideanDistance(Point a, Point b) {
         double distance = 99999;
         try {
             if (a != null && b != null) {

@@ -54,10 +54,29 @@ public class StatusSubsystem extends Subsystem {
 		};
 		statusDaemon.publicRequires(this);
 		this.setDefaultCommand(statusDaemon);
+		startBetaIMULocalization();
 	}
 
-	public void write_info() {
-		// Nothing to write because we have live window
+	public final void write_info() {
+		SmartDashboard.putNumber("accXofs", accXofs);
+		SmartDashboard.putNumber("accX", mAccel.getX() - accXofs);
+	}
+
+	double accXofs = 0;
+
+	public void startBetaIMULocalization() {
+		calibrateIMU((long) 1e9);
+		double accX = mAccel.getX(), accY = mAccel.getY(), accZ = mAccel.getZ();
+	}
+
+	public void calibrateIMU(long timeNano) {
+		long time = System.nanoTime();
+		int count = 0;
+		while (System.nanoTime() - time < timeNano) {
+			count++;
+			accXofs += mAccel.getX();
+		}
+		accXofs /= count;
 	}
 
 	public void pullGyro() {
