@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -37,6 +40,7 @@ public class StatusSubsystem extends Subsystem {
 	public Ultrasonic mUltraS = Robot.mOI.frontDistamceSensor;
 	public double absHeading = 0;
 	public double heading = 0;
+	public TalonSRX mTalon1 = Robot.mOI.mTalon1;
 
 	public StatusSubsystem() {
 		super();
@@ -54,10 +58,12 @@ public class StatusSubsystem extends Subsystem {
 		};
 		statusDaemon.publicRequires(this);
 		this.setDefaultCommand(statusDaemon);
+		setPosition(0);
 		startBetaIMULocalization();
 	}
 
 	public final void write_info() {
+		SmartDashboard.putNumber("Encoder Position", getPosition());
 		SmartDashboard.putNumber("accXofs", accXofs);
 		SmartDashboard.putNumber("accX", mAccel.getX() - accXofs);
 	}
@@ -77,6 +83,14 @@ public class StatusSubsystem extends Subsystem {
 			accXofs += mAccel.getX();
 		}
 		accXofs /= count;
+	}
+
+	public double getPosition() {
+		return mTalon1.getSensorCollection().getQuadraturePosition();
+	}
+
+	public ErrorCode setPosition(int newPosition) {
+		return mTalon1.getSensorCollection().setQuadraturePosition(newPosition, 19);
 	}
 
 	public void pullGyro() {

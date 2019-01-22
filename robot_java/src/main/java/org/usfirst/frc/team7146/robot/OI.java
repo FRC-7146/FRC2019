@@ -10,6 +10,9 @@ package org.usfirst.frc.team7146.robot;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import org.usfirst.frc.team7146.robot.commands.AutoAlignCommand;
 import org.usfirst.frc.team7146.robot.commands.CmdBase;
 import org.usfirst.frc.team7146.robot.commands.ModeChangeCommand;
@@ -42,6 +45,7 @@ public class OI {
 			rearRightMotor = new Spark(RobotMap.MOTOR.BR_MOTOR);
 	// public MecanumDrive drive = new MecanumDrive(frontLeftMotor, rearLeftMotor,
 	// frontRightMotor, rearRightMotor);
+	// TODO: Enable on release
 	public MecanumDrive drive = null;
 
 	public Joystick mJoystick0 = new Joystick(0);// Dual Action
@@ -71,6 +75,7 @@ public class OI {
 	public Accelerometer mAccelerometer = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 	public Ultrasonic frontDistamceSensor = new Ultrasonic(RobotMap.ULTRASONIC.FRONT_TRG,
 			RobotMap.ULTRASONIC.FRONT_ECH);
+	public TalonSRX mTalon1 = new TalonSRX(0);
 
 	public HashMap<String, CmdBase> mCommands = new HashMap<String, CmdBase>();
 
@@ -83,6 +88,7 @@ public class OI {
 		mJoystick0.setZChannel(0);// zIn
 		mJoystick0.setTwistChannel(1);// grabberIn
 		frontDistamceSensor.setAutomaticMode(true);
+		mTalon1.set(ControlMode.PercentOutput, 0.0); // Disable output coz not needed
 
 		/* Btn bindings */
 		precisionBtn.whenActive(new ModeChangeCommand(new RobotMap.MOTOR.PRECISION()));
