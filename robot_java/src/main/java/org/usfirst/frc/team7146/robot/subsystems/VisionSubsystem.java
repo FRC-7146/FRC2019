@@ -134,15 +134,11 @@ public class VisionSubsystem extends Subsystem {
                         isCVUsable = false;
                         continue;
                     } else {
-                        if (lazyIteration++ < lazyness) {
-                            label(frame, realTarget, new Scalar(50, 50, 250));
-                            isCVUsable = false;
-                            cvSrcOut.putFrame(frame);
-                            Utils.release(frame);
-                            // Thread.sleep(10, 0);
-                            continue;
-                        }
-                        lazyIteration = 0;
+                        /*
+                         * if (lazyIteration++ < lazyness) { label(frame, realTarget, new Scalar(50, 50,
+                         * 250)); isCVUsable = false; cvSrcOut.putFrame(frame); Utils.release(frame);
+                         * continue; } lazyIteration = 0;
+                         */
                         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
                         Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
                         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
