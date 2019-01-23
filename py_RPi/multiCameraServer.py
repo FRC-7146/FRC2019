@@ -13,50 +13,19 @@ import sys
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 from networktables import NetworkTablesInstance
 
-#   JSON format:
-#   {
-#       "team": <team number>,
-#       "ntmode": <"client" or "server", "client" if unspecified>
-#       "cameras": [
-#           {
-#               "name": <camera name>
-#               "path": <path, e.g. "/dev/video0">
-#               "pixel format": <"MJPEG", "YUYV", etc>   // optional
-#               "width": <video mode width>              // optional
-#               "height": <video mode height>            // optional
-#               "fps": <video mode fps>                  // optional
-#               "brightness": <percentage brightness>    // optional
-#               "white balance": <"auto", "hold", value> // optional
-#               "exposure": <"auto", "hold", value>      // optional
-#               "properties": [                          // optional
-#                   {
-#                       "name": <property name>
-#                       "value": <property value>
-#                   }
-#               ],
-#               "stream": {                              // optional
-#                   "properties": [
-#                       {
-#                           "name": <stream property name>
-#                           "value": <stream property value>
-#                       }
-#                   ]
-#               }
-#           }
-#       ]
-#   }
-
 configFile = "/boot/frc.json"
 
 class CameraConfig: pass
 
 team = None
 server = False
+json_instance=None
 cameraConfigs = []
 
 """Report parse error."""
 def parseError(str):
-    print("config error in '" + configFile + "': " + str, file=sys.stderr)
+    print("config error in '" + configFile + "': " + str)
+    # print("config error in '" + configFile + "': " + str, file=sys.stderr)
 
 """Read single camera configuration."""
 def readCameraConfig(config):
@@ -94,7 +63,7 @@ def readConfig():
         with open(configFile, "rt") as f:
             j = json.load(f)
     except OSError as err:
-        print("could not open '{}': {}".format(configFile, err), file=sys.stderr)
+        print("could not open '{}': {}".format(configFile, err))
         return False
 
     # top level must be an object
@@ -107,7 +76,8 @@ def readConfig():
         team = j["team"]
     except KeyError:
         parseError("could not read team number")
-        return False
+        team=7146
+        # return False
 
     # ntmode (optional)
     if "ntmode" in j:
@@ -128,7 +98,7 @@ def readConfig():
     for camera in cameras:
         if not readCameraConfig(camera):
             return False
-
+    json_instance=j
     return True
 
 """Start running the camera."""
@@ -168,6 +138,9 @@ if __name__ == "__main__":
     for cameraConfig in cameraConfigs:
         cameras.append(startCamera(cameraConfig))
 
+
+    SmartDashBoard=NetworkTablesInstance.getTable('SmartDashboard')
+    SmartDashBoard.putBoolean('Pi Online',True)
     # loop forever
     while True:
         time.sleep(10)
