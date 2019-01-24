@@ -48,12 +48,15 @@ public class AutoAlignCommand extends CmdGroupBase {
 				&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = VisionSubsystem.target.x))) < 15) {
 			dataEligiable = true;
 			if (!ManualControlCommand.manualOverAuto()) {
-				double yVec = 0, xVec = dataOffset / 48;// TODO: drive forard on stable
+				double yVec = 0, xVec = dataOffset / (dataOffset > 20 ? 70 : 45);
+				xVec = xVec > 0 ? (xVec + 0.05) : (xVec - 0.05);
+				xVec = Math.abs(dataOffset) < 2 ? 0 : xVec;
+				yVec = Math.abs(dataOffset) < 10 ? 0.4 : 0;// drive forward
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
 						Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
 			}
-		} else {
+		} else if (!ManualControlCommand.manualOverAuto()) {
 			Robot.mChasisDriveSubsystem.pidTurnAbsolute(0, 0,
 					Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
 			dataEligiable = false;

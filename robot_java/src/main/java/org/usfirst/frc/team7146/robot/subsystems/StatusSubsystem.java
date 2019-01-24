@@ -1,36 +1,15 @@
 package org.usfirst.frc.team7146.robot.subsystems;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
-import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import io.github.d0048.Utils;
 
 //TODO: Enable positions on release
 public class StatusSubsystem extends Subsystem {
@@ -60,7 +39,7 @@ public class StatusSubsystem extends Subsystem {
 		statusDaemon.publicRequires(this);
 		this.setDefaultCommand(statusDaemon);
 		// setPosition(0);
-		startBetaIMULocalization();
+		// startBetaIMULocalization();
 	}
 
 	public final void write_info() {

@@ -29,10 +29,13 @@ public class ChasisDriveSubsystem extends Subsystem {
 			frontRightMotor = Robot.mOI.frontRightMotor, rearRightMotor = Robot.mOI.rearRightMotor;
 	public MecanumDrive drive = Robot.mOI.drive;
 	StatusSubsystem status = Robot.mStatusSubsystem;
-	double currentYSpeed = 0, currentXSpeed = 0, currentZRotation = 0;
+	public double currentYSpeed = 0, currentXSpeed = 0, currentZRotation = 0;
 
 	public ChasisDriveSubsystem() {
 	}
+
+	// TODO: Can not turn negative for some reason
+	double tol = 3;// Degree allowed to be wrong
 
 	public void pidTurnAbsolute(double ySpeed, double xSpeed, double requestAng) {
 		status.pullGyro();
@@ -45,17 +48,19 @@ public class ChasisDriveSubsystem extends Subsystem {
 				rot = rot + 360;
 			}
 		}
-		// TODO: Calibrate
-		rot /= 60; // PID FACTOR
+		rot = Math.abs(rot) > tol ? rot : 0;
+		rot = rot / (rot > 45 ? 30 : 10); // PID FACTOR
 		safeDriveCartesian(ySpeed, xSpeed, rot);
 	}
 
 	public void safeDriveCartesian(double ySpeed, double xSpeed, double zRotation) {
-		currentYSpeed = Utils.speedCalc(ySpeed, RobotMap.MOTOR.CURRENT_MODE.getY_LIMIT());
-		currentXSpeed = Utils.speedCalc(xSpeed, RobotMap.MOTOR.CURRENT_MODE.getX_LIMIT());
-		currentZRotation = Utils.speedCalc(zRotation, RobotMap.MOTOR.CURRENT_MODE.getZ_LIMIT());
-		// drive.driveCartesian(currentYSpeed, currentXSpeed, currentZRotation);
-		// TODO: Enable on release
+		currentYSpeed = Utils.speedCalc(ySpeed, RobotMap.MOTOR.CURRENT_MODE.getY_LIMIT(),
+				RobotMap.MOTOR.CURRENT_MODE.Y_SENSITIVITY);
+		currentXSpeed = Utils.speedCalc(xSpeed, RobotMap.MOTOR.CURRENT_MODE.getX_LIMIT(),
+				RobotMap.MOTOR.CURRENT_MODE.X_SENSITIVITY);
+		currentZRotation = Utils.speedCalc(zRotation, RobotMap.MOTOR.CURRENT_MODE.getZ_LIMIT(),
+				RobotMap.MOTOR.CURRENT_MODE.Z_SENSITIVITY);
+		drive.driveCartesian(currentXSpeed, currentYSpeed, currentZRotation);
 		write_info();
 	}
 
@@ -66,8 +71,6 @@ public class ChasisDriveSubsystem extends Subsystem {
 		status.pullGyro();
 		double[] rotated = Utils.absoluteVector2Relative(ySpeed, xSpeed, status.absHeading);
 		safeDriveCartesian(rotated[0], rotated[1], zRotation);
-		System.out.println(ySpeed + ", " + xSpeed);
-		System.out.println(rotated[1] + ", " + rotated[0]);
 	}
 
 	public void stop() {

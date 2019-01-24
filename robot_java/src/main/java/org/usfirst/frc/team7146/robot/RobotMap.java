@@ -23,8 +23,10 @@ public class RobotMap {
 		public static NORMAL CURRENT_MODE = new NORMAL();
 
 		public static class NORMAL {
-			public double X_LIMIT = 0.5, Y_LIMIT = 0.5, Z_LIMIT = 0.5;
-			public double SENSITIVITY = 0.0;
+			public double X_LIMIT = 0.7, Y_LIMIT = 0.4, Z_LIMIT = 0.3;
+			// public double X_SENSITIVITY = 0.1, Y_SENSITIVITY = 0.15, Z_SENSITIVITY =
+			// 0.15;
+			public double X_SENSITIVITY = 0.04, Y_SENSITIVITY = 0.04, Z_SENSITIVITY = 0;
 
 			@Override
 			public String toString() {
@@ -43,15 +45,10 @@ public class RobotMap {
 				return Z_LIMIT;
 			}
 
-			public double getSENSITIVITY() {
-				return SENSITIVITY;
-			}
-
 		}
 
 		public static class PRECISION extends NORMAL {
-			public double X_LIMIT = 0.3, Y_LIMIT = 0.3, Z_LIMIT = 0.3;
-			public double SENSITIVITY = 0.0;
+			public double X_LIMIT = 0.6, Y_LIMIT = 0.3, Z_LIMIT = 0.2;
 
 			@Override
 			public String toString() {
@@ -69,15 +66,10 @@ public class RobotMap {
 			public double getZ_LIMIT() {
 				return Z_LIMIT;
 			}
-
-			public double getSENSITIVITY() {
-				return SENSITIVITY;
-			}
 		}
 
 		public static class SPORT extends NORMAL {
-			public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
-			public double SENSITIVITY = 0.08;
+			public double X_LIMIT = 0.9, Y_LIMIT = 0.7, Z_LIMIT = 0.8;
 
 			@Override
 			public String toString() {
@@ -95,15 +87,10 @@ public class RobotMap {
 			public double getZ_LIMIT() {
 				return Z_LIMIT;
 			}
-
-			public double getSENSITIVITY() {
-				return SENSITIVITY;
-			}
 		}
 
 		public static class AUTO extends NORMAL {
-			public double X_LIMIT = 0.5, Y_LIMIT = 0.5, Z_LIMIT = 0.5;
-			public double SENSITIVITY = 0.08;
+			public double X_LIMIT = 0.5, Y_LIMIT = 0.4, Z_LIMIT = 0.5;
 
 			@Override
 			public String toString() {
@@ -120,10 +107,6 @@ public class RobotMap {
 
 			public double getZ_LIMIT() {
 				return Z_LIMIT;
-			}
-
-			public double getSENSITIVITY() {
-				return SENSITIVITY;
 			}
 		}
 	}

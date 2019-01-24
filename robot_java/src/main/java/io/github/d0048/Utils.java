@@ -38,7 +38,7 @@ public class Utils {
 		return nearestAngle;
 	}
 
-	public static final double speedCalc(double input, double absLimit) {
+	public static final double speedCalc(double input, double absLimit, double sensitivity) {
 		double ret = (input * absLimit);
 		if (Math.abs(ret) > absLimit) {
 			if (input > 0) {
@@ -47,7 +47,8 @@ public class Utils {
 				return -absLimit;
 			}
 		}
-		return ret;
+		// return ret;
+		return ret > 0 ? ret + sensitivity : ret - sensitivity;
 	}
 
 	public static final void release(Mat o) {

@@ -43,10 +43,9 @@ public class OI {
 	public SpeedController frontLeftMotor = new Spark(RobotMap.MOTOR.FL_MOTOR),
 			rearLeftMotor = new Spark(RobotMap.MOTOR.BL_MOTOR), frontRightMotor = new Spark(RobotMap.MOTOR.FR_MOTOR),
 			rearRightMotor = new Spark(RobotMap.MOTOR.BR_MOTOR);
-	// public MecanumDrive drive = new MecanumDrive(frontLeftMotor, rearLeftMotor,
-	// frontRightMotor, rearRightMotor);
+	public MecanumDrive drive = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 	// TODO: Enable on release
-	public MecanumDrive drive = null;
+	// public MecanumDrive drive = null;
 
 	public Joystick mJoystick0 = new Joystick(0);// Dual Action
 	public Button mXboxBtnA = new JoystickButton(mJoystick0, RobotMap.JS.NUM_XBOX_A),
