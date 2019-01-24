@@ -23,7 +23,7 @@ public class RobotMap {
 		public static NORMAL CURRENT_MODE = new NORMAL();
 
 		public static class NORMAL {
-			public double X_LIMIT = 0.7, Y_LIMIT = 0.4, Z_LIMIT = 0.3;
+			public double X_LIMIT = 0.4, Y_LIMIT = 0.4, Z_LIMIT = 0.3;
 			// public double X_SENSITIVITY = 0.1, Y_SENSITIVITY = 0.15, Z_SENSITIVITY =
 			// 0.15;
 			public double X_SENSITIVITY = 0.04, Y_SENSITIVITY = 0.04, Z_SENSITIVITY = 0;
@@ -48,7 +48,7 @@ public class RobotMap {
 		}
 
 		public static class PRECISION extends NORMAL {
-			public double X_LIMIT = 0.6, Y_LIMIT = 0.3, Z_LIMIT = 0.2;
+			public double X_LIMIT = 0.3, Y_LIMIT = 0.3, Z_LIMIT = 0.2;
 
 			@Override
 			public String toString() {
@@ -126,8 +126,7 @@ public class RobotMap {
 		public static final int NUM_XBOX_START = 10;
 	}
 
-	public static class ULTRASONIC {
-		public static int FRONT_TRG = 9;
-		public static int FRONT_ECH = 8;
+	public static class ULTRA_RED {
+		public static final int F = 0, B = 1, L = 2, R = 3;
 	}
 }

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
+import io.github.d0048.UltraRedAnalogDistanceSensor;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -72,8 +73,15 @@ public class OI {
 
 	public ADXRS450_Gyro mGyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	public Accelerometer mAccelerometer = new BuiltInAccelerometer(Accelerometer.Range.k4G);
-	public Ultrasonic frontDistamceSensor = new Ultrasonic(RobotMap.ULTRASONIC.FRONT_TRG,
-			RobotMap.ULTRASONIC.FRONT_ECH);
+	// public Ultrasonic frontDistamceSensor = new
+	// Ultrasonic(RobotMap.ULTRASONIC.FRONT_TRG,
+	// RobotMap.ULTRASONIC.FRONT_ECH);
+
+	public UltraRedAnalogDistanceSensor ultraRedFwd = new UltraRedAnalogDistanceSensor(RobotMap.ULTRA_RED.F, "FRONT");
+	public UltraRedAnalogDistanceSensor ultraRedBwd = new UltraRedAnalogDistanceSensor(RobotMap.ULTRA_RED.B, "BACK");
+	public UltraRedAnalogDistanceSensor ultraRedLwd = new UltraRedAnalogDistanceSensor(RobotMap.ULTRA_RED.L, "LEFT");
+	public UltraRedAnalogDistanceSensor ultraRedRwd = new UltraRedAnalogDistanceSensor(RobotMap.ULTRA_RED.R, "RIGHT");
+
 	// TODO: Enable positions on release
 	// public TalonSRX mTalon1 = new TalonSRX(0);
 
@@ -87,7 +95,7 @@ public class OI {
 		mJoystick0.setYChannel(3);// yIn
 		mJoystick0.setZChannel(0);// zIn
 		mJoystick0.setTwistChannel(1);// grabberIn
-		frontDistamceSensor.setAutomaticMode(true);
+		// frontDistamceSensor.setAutomaticMode(true);
 		// TODO: Enable positions on release
 		// mTalon1.set(ControlMode.PercentOutput, 0.0); // Disable output coz not needed
 

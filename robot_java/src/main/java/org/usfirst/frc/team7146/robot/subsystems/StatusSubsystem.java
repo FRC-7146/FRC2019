@@ -10,16 +10,23 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.github.d0048.UltraRedAnalogDistanceSensor;
 
 //TODO: Enable positions on release
 public class StatusSubsystem extends Subsystem {
 	private static final Logger logger = Logger.getLogger(StatusSubsystem.class.getName());
 	public static boolean DEBUG = true;
+
 	public Gyro mGyro = Robot.mOI.mGyro;
 	public Accelerometer mAccel = Robot.mOI.mAccelerometer;
-	public Ultrasonic mUltraS = Robot.mOI.frontDistamceSensor;
 	public double absHeading = 0;
 	public double heading = 0;
+	// TODO:limit drive
+	public UltraRedAnalogDistanceSensor ultraRedFwd = Robot.mOI.ultraRedFwd;
+	public UltraRedAnalogDistanceSensor ultraRedBwd = Robot.mOI.ultraRedBwd;
+	public UltraRedAnalogDistanceSensor ultraRedLwd = Robot.mOI.ultraRedLwd;
+	public UltraRedAnalogDistanceSensor ultraRedRwd = Robot.mOI.ultraRedRwd;
+
 	// public TalonSRX mTalon1 = Robot.mOI.mTalon1;
 
 	public StatusSubsystem() {
@@ -44,11 +51,19 @@ public class StatusSubsystem extends Subsystem {
 
 	public final void write_info() {
 		// SmartDashboard.putNumber("Encoder Position", getPosition());
-		SmartDashboard.putNumber("accXofs", accXofs);
-		SmartDashboard.putNumber("accX", mAccel.getX() - accXofs);
+		SmartDashboard.putNumber("acc X ofs", accXofs);
+		SmartDashboard.putNumber("acc X", mAccel.getX() - accXofs);
+		SmartDashboard.putNumber("speed X", speedX += (mAccel.getX() - accXofs));
+		SmartDashboard.putNumber("disp X", dispX += speedX);
+		SmartDashboard.putNumber("[UR] " + ultraRedFwd.getName(), ultraRedFwd.getDistance());
+		SmartDashboard.putNumber("[UR] " + ultraRedBwd.getName(), ultraRedBwd.getDistance());
+		SmartDashboard.putNumber("[UR] " + ultraRedLwd.getName(), ultraRedLwd.getDistance());
+		SmartDashboard.putNumber("[UR] " + ultraRedRwd.getName(), ultraRedRwd.getDistance());
 	}
 
+	// ===================IMU Work in Progress=========================
 	double accXofs = 0;
+	double speedX = 0, dispX = 0;
 
 	public void startBetaIMULocalization() {
 		calibrateIMU((long) 1e9);
@@ -64,6 +79,7 @@ public class StatusSubsystem extends Subsystem {
 		}
 		accXofs /= count;
 	}
+	// ===================IMU Work in Progress=========================
 
 	/*
 	 * public double getPosition() { return
