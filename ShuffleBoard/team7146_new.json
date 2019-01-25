@@ -10,17 +10,6 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "0,5": {
-            "size": [
-              6,
-              1
-            ],
-            "content": {
-              "_type": "Network Table Tree",
-              "_source0": "network_table:///LiveWindow/Ungrouped/Scheduler",
-              "_title": "LiveWindow/Ungrouped/Scheduler"
-            }
-          },
           "0,0": {
             "size": [
               4,
@@ -117,7 +106,7 @@
               }
             }
           },
-          "8,0": {
+          "6,0": {
             "size": [
               2,
               2
@@ -179,7 +168,7 @@
               }
             }
           },
-          "11,0": {
+          "8,1": {
             "size": [
               1,
               1
@@ -192,7 +181,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "10,0": {
+          "8,0": {
             "size": [
               1,
               1
@@ -205,7 +194,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "6,0": {
+          "5,1": {
             "size": [
               1,
               1
@@ -219,7 +208,7 @@
               "Visuals/Show value": true
             }
           },
-          "7,0": {
+          "5,0": {
             "size": [
               1,
               1
@@ -230,20 +219,6 @@
               "_title": "Auto Y Offset",
               "Range/Min": -80.0,
               "Range/Max": 80.0,
-              "Visuals/Show value": true
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///LiveWindow/Ungrouped/Ultrasonic[8]/Value",
-              "_title": "Ultrasonic[8]/Value",
-              "Range/Min": 0.0,
-              "Range/Max": 100.0,
               "Visuals/Show value": true
             }
           },
@@ -260,9 +235,9 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "7,2": {
+          "6,2": {
             "size": [
-              6,
+              4,
               4
             ],
             "content": {
@@ -279,22 +254,6 @@
               "imageHeight": 0
             }
           },
-          "10,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Voltage View",
-              "_source0": "network_table:///SmartDashboard/[CV]Lazyness",
-              "_title": "[CV]Lazyness",
-              "Range/Min": 0.0,
-              "Range/Max": 3.0,
-              "Range/Center": 0.0,
-              "Visuals/Orientation": "HORIZONTAL",
-              "Visuals/Number of tick marks": 5
-            }
-          },
           "4,1": {
             "size": [
               1,
@@ -308,21 +267,57 @@
           },
           "4,2": {
             "size": [
-              3,
-              3
+              2,
+              4
             ],
             "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://rPi Camera 0",
-              "_title": "rPi Camera 0",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 100.0,
-              "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "TOP",
+              "_children": {
+                "1,2": {
+                  "_type": "Voltage View",
+                  "_source0": "network_table:///SmartDashboard/[UR] BACK",
+                  "_title": "[UR] BACK",
+                  "Range/Min": 0.0,
+                  "Range/Max": 200.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Orientation": "VERTICAL",
+                  "Visuals/Number of tick marks": 5
+                },
+                "0,1": {
+                  "_type": "Voltage View",
+                  "_source0": "network_table:///SmartDashboard/[UR] LEFT",
+                  "_title": "[UR] LEFT",
+                  "Range/Min": 0.0,
+                  "Range/Max": 200.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Orientation": "VERTICAL",
+                  "Visuals/Number of tick marks": 5
+                },
+                "2,1": {
+                  "_type": "Voltage View",
+                  "_source0": "network_table:///SmartDashboard/[UR] RIGHT",
+                  "_title": "[UR] RIGHT",
+                  "Range/Min": 0.0,
+                  "Range/Max": 200.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Orientation": "VERTICAL",
+                  "Visuals/Number of tick marks": 5
+                },
+                "1,0": {
+                  "_type": "Voltage View",
+                  "_source0": "network_table:///SmartDashboard/[UR] FRONT",
+                  "_title": "[UR] FRONT",
+                  "Range/Min": 0.0,
+                  "Range/Max": 200.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Orientation": "VERTICAL",
+                  "Visuals/Number of tick marks": 5
+                }
+              }
             }
           }
         }
@@ -337,14 +332,93 @@
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
-        "tiles": {}
+        "tiles": {
+          "0,0": {
+            "size": [
+              7,
+              2
+            ],
+            "content": {
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///LiveWindow/Ungrouped/Scheduler",
+              "_title": "/LiveWindow/Ungrouped/Scheduler"
+            }
+          },
+          "4,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/disp X",
+              "_title": "/SmartDashboard/disp X"
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/speed X",
+              "_title": "/SmartDashboard/speed X"
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/acc X",
+              "_title": "/SmartDashboard/acc X"
+            }
+          },
+          "4,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/acc X ofs",
+              "_title": "/SmartDashboard/acc X ofs"
+            }
+          },
+          "7,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "1,0": {
+                  "_type": "Simple Dial",
+                  "_source0": "network_table:///SmartDashboard/[UR] Forward",
+                  "_title": "[UR] Forward",
+                  "Range/Min": 0.0,
+                  "Range/Max": 2500.0,
+                  "Visuals/Show value": true
+                }
+              }
+            }
+          }
+        }
       }
     }
   ],
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1918.0,
-    "height": 1051.0
+    "width": 1920.0,
+    "height": 1080.0
   }
 }
