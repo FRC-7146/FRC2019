@@ -15,19 +15,27 @@ from networktables import NetworkTablesInstance
 
 configFile = "/boot/frc.json"
 
-class CameraConfig: pass
+
+class CameraConfig:
+    pass
+
 
 team = None
 server = False
-json_instance=None
+json_instance = None
 cameraConfigs = []
 
 """Report parse error."""
+
+
 def parseError(str):
     print("config error in '" + configFile + "': " + str)
     # print("config error in '" + configFile + "': " + str, file=sys.stderr)
 
+
 """Read single camera configuration."""
+
+
 def readCameraConfig(config):
     cam = CameraConfig()
 
@@ -53,7 +61,10 @@ def readCameraConfig(config):
     cameraConfigs.append(cam)
     return True
 
+
 """Read configuration file."""
+
+
 def readConfig():
     global team
     global server
@@ -76,7 +87,7 @@ def readConfig():
         team = j["team"]
     except KeyError:
         parseError("could not read team number")
-        team=7146
+        team = 7146
         # return False
 
     # ntmode (optional)
@@ -98,10 +109,13 @@ def readConfig():
     for camera in cameras:
         if not readCameraConfig(camera):
             return False
-    json_instance=j
+    json_instance = j
     return True
 
+
 """Start running the camera."""
+
+
 def startCamera(config):
     print("Starting camera '{}' on {}".format(config.name, config.path))
     inst = CameraServer.getInstance()
@@ -115,6 +129,7 @@ def startCamera(config):
         server.setConfigJson(json.dumps(config.streamConfig))
 
     return camera
+
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
@@ -138,9 +153,30 @@ if __name__ == "__main__":
     for cameraConfig in cameraConfigs:
         cameras.append(startCamera(cameraConfig))
 
+    SmartDashBoard = ntinst.getTable('SmartDashboard')
+    SmartDashBoard.putBoolean('Pi Running', True)
 
-    SmartDashBoard=NetworkTablesInstance.getTable('SmartDashboard')
-    SmartDashBoard.putBoolean('Pi Online',True)
-    # loop forever
-    while True:
-        time.sleep(10)
+    resolution=(800,600)
+    import cv2
+    import numpy as np
+    camera = None
+    if(cameras.__len__() > 0):
+        camera = cameras[0]
+    cvSink=CameraServer.getInstance().getVideo()
+    piSrc=CameraServer.getInstance().putVideo('Pi out',resolution[0],resolution[1])
+    frame=np.zeros([resolution[0],resolution[1],3])
+    try:
+        while True:
+            if(cameras.__len__() > 0):
+                camera = cameras[0]
+                print(camera)
+                if(0==cvSink.grabFrame(frame)):
+                    print('error grabbing frame')
+                else:
+                    cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+                    piSrc.putFrame(frame)
+            else:
+                time.sleep(10)
+    except Exception as e:
+        print('Error in CV: {}'.format(e))
+        SmartDashBoard.putBoolean('Pi Running', False)

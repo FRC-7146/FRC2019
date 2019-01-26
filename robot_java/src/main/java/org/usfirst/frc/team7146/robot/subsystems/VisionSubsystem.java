@@ -60,7 +60,7 @@ public class VisionSubsystem extends Subsystem {
 
     public final void write_info() {
         SmartDashboard.putBoolean("CV Target Status", isCVUsable);
-        SmartDashboard.putNumber("[CV]Lazyness", lazyness);
+        SmartDashboard.putData("CV Data Source Selection", srcChooser);
     }
 
     public final void putCVInfo() {
@@ -83,6 +83,7 @@ public class VisionSubsystem extends Subsystem {
             LOWER_BOUND.val[1] = SmartDashboard.getNumber("LOW S", LOWER_BOUND.val[1]);
             LOWER_BOUND.val[2] = SmartDashboard.getNumber("LOW V", LOWER_BOUND.val[2]);
             EXPLOSURE = (int) SmartDashboard.getNumber("EXPLOSURE(-1: auto)", EXPLOSURE);
+            currentSource = srcChooser.getSelected();
             if (EXPLOSURE != -1)
                 mUsbCamera.setExposureManual(EXPLOSURE);
             else
@@ -101,7 +102,7 @@ public class VisionSubsystem extends Subsystem {
     CvSource cvSrcOut, cvSrcMask;
     int[] resolution = { 40, 100 };
     Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
-    public static int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
+    public static int EXPLOSURE = 0;
 
     public static int lazynessIDLE = 2;
     public static int lazyness = lazynessIDLE;
@@ -129,7 +130,7 @@ public class VisionSubsystem extends Subsystem {
             e.printStackTrace();
         }
         Thread t = new Thread(() -> {
-            int gcIteration = 0, lazyIteration = 0;
+            int gcIteration = 0;
             Mat frame = new Mat();
             Mat dst = new Mat();
             List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -145,99 +146,101 @@ public class VisionSubsystem extends Subsystem {
                         continue;
                     } else {
                         if (currentSource.src == SrcTypes.PI) {
-                            try {
-                                // TODO: Communicate with PI
-                            } catch (Exception e) {
-                                logger.warning("PI Offline:" + e.getMessage());
+                            if (true == SmartDashboard.getBoolean("[PI]CV Target Status", false)) {
+                                cvSrcOut.putFrame(frame);
+                                frame.release();
+                                isCVUsable = true;
+                                continue;
+                            } else {
+                                logger.warning("PI Offline: Falling back to onboard");
                             }
-                        } else if (currentSource.src == SrcTypes.ON_BOARD) {// Consider falling back if PI offline?
-                            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
-                            Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
-                            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
-                            contours.clear();
-                            maxContours.clear();
-                            Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_CCOMP,
-                                    Imgproc.CHAIN_APPROX_SIMPLE);
-                            Utils.release(dst);
-                            if (contours.size() >= 2) {
-                                for (int i = 0; i < 2; i++) { // find 2 largest contours
-                                    MatOfPoint maxContour = contours.get(0);
-                                    double maxArea = minRecArea;// Also threshold of min cont area
-                                    for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
-                                        MatOfPoint contour = iterator.next();
-                                        double area = Imgproc.contourArea(contour);
-                                        if (area > maxArea) {
-                                            maxArea = area;
-                                            maxContour = contour;
-                                        }
-                                    }
-                                    maxContours.add(maxContour);
-                                    contours.remove(maxContour);
-                                }
-                                if (!contours.isEmpty()) {
-                                    double maxArea = Imgproc.contourArea(maxContours.get(0));
-                                    for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
-                                        MatOfPoint contour = iterator.next();
-                                        double area = Imgproc.contourArea(contour);
-                                        if (area / maxArea > 0.7 && area > minRecArea) {
-                                            maxContours.add(contour);
-                                            iterator.remove();
-                                        }
+                        }
+                        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
+                        Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
+                        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
+                        contours.clear();
+                        maxContours.clear();
+                        Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+                        cvSrcMask.putFrame(dst);
+                        Utils.release(dst);
+                        if (contours.size() >= 2) {
+                            for (int i = 0; i < 2; i++) { // find 2 largest contours
+                                MatOfPoint maxContour = contours.get(0);
+                                double maxArea = minRecArea;// Also threshold of min cont area
+                                for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
+                                    MatOfPoint contour = iterator.next();
+                                    double area = Imgproc.contourArea(contour);
+                                    if (area > maxArea) {
+                                        maxArea = area;
+                                        maxContour = contour;
                                     }
                                 }
-                                Utils.releaseMoPs(contours);
-                                Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
-                                possibleRects.clear();
-                                MatOfPoint2f cnt = new MatOfPoint2f();
-                                for (MatOfPoint c : maxContours) {
-                                    c.convertTo(cnt, CvType.CV_32F);
-                                    possibleRects.add(Imgproc.minAreaRect(cnt));
-                                    drawRotatedRect(frame, possibleRects.get(possibleRects.size() - 1),
-                                            new Scalar(0, 250, 0), 1);
-                                }
-                                cnt.release();
-                                Utils.releaseMoPs(maxContours);
-                                Point center = centerOf(frame);
-                                label(frame, center, new Scalar(250, 50, 50));
-
-                                double minDist = euclideanDistance(possibleRects.get(0).center, center);
-                                RotatedRect centerRec = possibleRects.get(0);
-
-                                for (RotatedRect rec : possibleRects) {
-                                    double dist = euclideanDistance(rec.center, center);
-                                    if (dist < minDist) {
-                                        minDist = dist;
-                                        centerRec = rec;
+                                maxContours.add(maxContour);
+                                contours.remove(maxContour);
+                            }
+                            if (!contours.isEmpty()) {
+                                double maxArea = Imgproc.contourArea(maxContours.get(0));
+                                for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
+                                    MatOfPoint contour = iterator.next();
+                                    double area = Imgproc.contourArea(contour);
+                                    if (area / maxArea > 0.7 && area > minRecArea) {
+                                        maxContours.add(contour);
+                                        iterator.remove();
                                     }
-                                    drawRotatedRect(frame, rec, new Scalar(50, 50, 150), 3);
                                 }
-                                drawRotatedRect(frame, centerRec, new Scalar(250, 100, 250), 4);
+                            }
+                            Utils.releaseMoPs(contours);
+                            Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
+                            possibleRects.clear();
+                            MatOfPoint2f cnt = new MatOfPoint2f();
+                            for (MatOfPoint c : maxContours) {
+                                c.convertTo(cnt, CvType.CV_32F);
+                                possibleRects.add(Imgproc.minAreaRect(cnt));
+                                drawRotatedRect(frame, possibleRects.get(possibleRects.size() - 1),
+                                        new Scalar(0, 250, 0), 1);
+                            }
+                            cnt.release();
+                            Utils.releaseMoPs(maxContours);
+                            Point center = centerOf(frame);
+                            label(frame, center, new Scalar(250, 50, 50));
 
-                                // Right one: rot > -45
-                                // Left one: rot < -45
-                                RotatedRect matchedRec = null;
-                                if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec,
-                                        possibleRects)) != null) {// if left one then search right for a right one
-                                    Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
-                                            Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
-                                    drawRotatedRect(frame, centerRec, new Scalar(256, 160, 256), 4);
-                                    Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250),
-                                            5);
-                                    target.x = (centerRec.center.x + matchedRec.center.x) / 2;
-                                    target.y = (centerRec.center.y + matchedRec.center.y) / 2;
-                                    label(frame, center, new Scalar(0, 0, 0));
-                                    label(frame, target, new Scalar(250, 50, 50));
-                                    realTarget = target.clone();
-                                    target.x -= center.x;
-                                    target.y -= center.y;
-                                    isCVUsable = true;
-                                } else {
-                                    isCVUsable = false;
+                            double minDist = euclideanDistance(possibleRects.get(0).center, center);
+                            RotatedRect centerRec = possibleRects.get(0);
+
+                            for (RotatedRect rec : possibleRects) {
+                                double dist = euclideanDistance(rec.center, center);
+                                if (dist < minDist) {
+                                    minDist = dist;
+                                    centerRec = rec;
                                 }
+                                drawRotatedRect(frame, rec, new Scalar(50, 50, 150), 3);
+                            }
+                            drawRotatedRect(frame, centerRec, new Scalar(250, 100, 250), 4);
+
+                            // Right one: rot > -45
+                            // Left one: rot < -45
+                            RotatedRect matchedRec = null;
+                            if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec,
+                                    possibleRects)) != null) {// if left one then search right for a right one
+                                Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
+                                        Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
+                                drawRotatedRect(frame, centerRec, new Scalar(256, 160, 256), 4);
+                                Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
+                                target.x = (centerRec.center.x + matchedRec.center.x) / 2;
+                                target.y = (centerRec.center.y + matchedRec.center.y) / 2;
+                                label(frame, center, new Scalar(0, 0, 0));
+                                label(frame, target, new Scalar(250, 50, 50));
+                                realTarget = target.clone();
+                                target.x -= center.x;
+                                target.y -= center.y;
+                                isCVUsable = true;
                             } else {
                                 isCVUsable = false;
                             }
+                        } else {
+                            isCVUsable = false;
                         }
+
                         cvSrcOut.putFrame(frame);
                         Utils.release(frame);
                         // Garbage Collection
