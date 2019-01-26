@@ -47,18 +47,18 @@ public class ManualControlCommand extends CmdGroupBase {
 			e.printStackTrace();
 		}
 		SmartDashboard.putString("Mobility Mode", RobotMap.MOTOR.CURRENT_MODE.toString());
-		if (isJS1Active()) {
-			SmartDashboard.putNumber("Y in", yIn1);
-			SmartDashboard.putNumber("X in", xIn1);
-			SmartDashboard.putNumber("Z in", zIn1);
-			SmartDashboard.putNumber("POV in", povIn1);
-			SmartDashboard.putString("Primary Controler:", js1.getName());
-		} else {
+		if (isJS0Active()) {
 			SmartDashboard.putNumber("Y in", yIn);
 			SmartDashboard.putNumber("X in", xIn);
 			SmartDashboard.putNumber("Z in", zIn);
 			SmartDashboard.putNumber("POV in", povIn);
 			SmartDashboard.putString("Primary Controler:", js0.getName());
+		} else {
+			SmartDashboard.putNumber("Y in", yIn1);
+			SmartDashboard.putNumber("X in", xIn1);
+			SmartDashboard.putNumber("Z in", zIn1);
+			SmartDashboard.putNumber("POV in", povIn1);
+			SmartDashboard.putString("Primary Controler:", js1.getName());
 		}
 		SmartDashboard.putNumber("Grabber in", grabberIn);
 		SmartDashboard.putBoolean("Manual Over Auto", manualOverAuto());
