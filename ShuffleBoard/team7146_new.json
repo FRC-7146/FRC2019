@@ -5,15 +5,15 @@
       "autoPopulate": false,
       "autoPopulatePrefix": "",
       "widgetPane": {
-        "gridSize": 128.0,
+        "gridSize": 64.0,
         "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
+        "hgap": 8.0,
+        "vgap": 8.0,
         "tiles": {
           "0,0": {
             "size": [
-              4,
-              4
+              6,
+              8
             ],
             "content": {
               "_type": "Grid Layout",
@@ -108,7 +108,7 @@
           },
           "6,0": {
             "size": [
-              2,
+              3,
               2
             ],
             "content": {
@@ -119,34 +119,52 @@
               "Layout/Label position": "BOTTOM",
               "_children": {
                 "0,0": {
-                  "_type": "Text View",
+                  "_type": "Number Slider",
                   "_source0": "network_table:///SmartDashboard/HIGH H",
-                  "_title": "HIGH H"
+                  "_title": "HIGH H",
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 255.0,
+                  "Slider Settings/Block increment": 0.0625
                 },
                 "0,1": {
-                  "_type": "Text View",
+                  "_type": "Number Slider",
                   "_source0": "network_table:///SmartDashboard/HIGH S",
-                  "_title": "HIGH S"
+                  "_title": "HIGH S",
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 255.0,
+                  "Slider Settings/Block increment": 0.0625
                 },
                 "0,2": {
-                  "_type": "Text View",
+                  "_type": "Number Slider",
                   "_source0": "network_table:///SmartDashboard/HIGH V",
-                  "_title": "HIGH V"
+                  "_title": "HIGH V",
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 255.0,
+                  "Slider Settings/Block increment": 0.0625
                 },
                 "1,0": {
-                  "_type": "Text View",
+                  "_type": "Number Slider",
                   "_source0": "network_table:///SmartDashboard/LOW H",
-                  "_title": "LOW H"
+                  "_title": "LOW H",
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 255.0,
+                  "Slider Settings/Block increment": 0.0625
                 },
                 "1,1": {
-                  "_type": "Text View",
+                  "_type": "Number Slider",
                   "_source0": "network_table:///SmartDashboard/LOW S",
-                  "_title": "LOW S"
+                  "_title": "LOW S",
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 255.0,
+                  "Slider Settings/Block increment": 0.0625
                 },
                 "1,2": {
-                  "_type": "Text View",
+                  "_type": "Number Slider",
                   "_source0": "network_table:///SmartDashboard/LOW V",
-                  "_title": "LOW V"
+                  "_title": "LOW V",
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 255.0,
+                  "Slider Settings/Block increment": 0.0625
                 },
                 "2,2": {
                   "_type": "Text View",
@@ -168,7 +186,7 @@
               }
             }
           },
-          "8,1": {
+          "16,1": {
             "size": [
               1,
               1
@@ -181,7 +199,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "8,0": {
+          "16,0": {
             "size": [
               1,
               1
@@ -194,7 +212,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "5,1": {
+          "14,0": {
             "size": [
               1,
               1
@@ -208,7 +226,7 @@
               "Visuals/Show value": true
             }
           },
-          "5,0": {
+          "12,0": {
             "size": [
               1,
               1
@@ -222,7 +240,7 @@
               "Visuals/Show value": true
             }
           },
-          "4,0": {
+          "6,4": {
             "size": [
               1,
               1
@@ -235,10 +253,10 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "6,2": {
+          "17,0": {
             "size": [
-              4,
-              4
+              7,
+              5
             ],
             "content": {
               "_type": "Camera Stream",
@@ -254,9 +272,9 @@
               "imageHeight": 0
             }
           },
-          "4,1": {
+          "6,5": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
@@ -265,7 +283,7 @@
               "_title": "SmartDashboard/Primary Controler:"
             }
           },
-          "4,2": {
+          "8,4": {
             "size": [
               2,
               4
@@ -318,6 +336,44 @@
                   "Visuals/Number of tick marks": 5
                 }
               }
+            }
+          },
+          "17,5": {
+            "size": [
+              7,
+              5
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://PI out",
+              "_title": "PI out",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
+          },
+          "17,10": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://rPi Camera 0",
+              "_title": "rPi Camera 0",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
             }
           }
         }
@@ -410,6 +466,19 @@
                 }
               }
             }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Pi Running",
+              "_title": "/SmartDashboard/Pi Running",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
           }
         }
       }
@@ -418,7 +487,7 @@
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1920.0,
-    "height": 1080.0
+    "width": 1918.0,
+    "height": 1051.0
   }
 }
