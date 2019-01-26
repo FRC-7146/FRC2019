@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.d0048.Utils;
 import io.github.d0048.vision.SrcTypes;
-import io.github.d0048.vision.CVDataSource;
 
 public class AutoAlignCommand extends CmdGroupBase {
 	private static final Logger logger = Logger.getLogger(AutoAlignCommand.class.getName());

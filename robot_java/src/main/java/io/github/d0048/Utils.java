@@ -11,6 +11,11 @@ public class Utils {
 	private static final Logger logger = Logger.getLogger(Utils.class.getName());
 	public static boolean DEBUG = false;
 
+	public static final double collisionCalc(double posDst, double negDst, double valIn, double collisionMarginDst) {
+		double dst = valIn > 0 ? posDst : negDst;
+		return dst > collisionMarginDst ? valIn : 0;
+	}
+
 	public static double[] absVecRet = { 0, 0 };// Y,X
 
 	public static final double[] absoluteVector2Relative(double relY, double relX, double absHeading) {

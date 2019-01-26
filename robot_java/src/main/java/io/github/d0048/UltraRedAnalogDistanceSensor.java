@@ -8,7 +8,7 @@ public class UltraRedAnalogDistanceSensor extends AnalogInput {
         super(channel);
         this.setName(name);
         this.setAverageBits(64);
-        this.setGlobalSampleRate(8000);
+        setGlobalSampleRate(8000);
     }
 
     // D(value)=434.735-55.18*ln(value)

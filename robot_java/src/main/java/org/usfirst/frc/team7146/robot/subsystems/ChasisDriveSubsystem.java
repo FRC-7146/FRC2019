@@ -14,7 +14,6 @@ import org.usfirst.frc.team7146.robot.RobotMap;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 import org.usfirst.frc.team7146.robot.commands.ManualControlCommand;
 
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -29,6 +28,9 @@ public class ChasisDriveSubsystem extends Subsystem {
 			frontRightMotor = Robot.mOI.frontRightMotor, rearRightMotor = Robot.mOI.rearRightMotor;
 	public MecanumDrive drive = Robot.mOI.drive;
 	StatusSubsystem status = Robot.mStatusSubsystem;
+
+	public static boolean COLLISION_SAFETY = false;
+	public static double collisionMarginCM = 25;
 	public double currentYSpeed = 0, currentXSpeed = 0, currentZRotation = 0;
 
 	public ChasisDriveSubsystem() {
@@ -60,6 +62,11 @@ public class ChasisDriveSubsystem extends Subsystem {
 				RobotMap.MOTOR.CURRENT_MODE.X_SENSITIVITY);
 		currentZRotation = Utils.speedCalc(zRotation, RobotMap.MOTOR.CURRENT_MODE.getZ_LIMIT(),
 				RobotMap.MOTOR.CURRENT_MODE.Z_SENSITIVITY);
+		if (COLLISION_SAFETY) {
+			double[] dsts = status.getDistances();
+			currentXSpeed = Utils.collisionCalc(dsts[2], dsts[3], currentXSpeed, collisionMarginCM);
+			currentXSpeed = Utils.collisionCalc(dsts[0], dsts[1], currentYSpeed, collisionMarginCM);
+		}
 		drive.driveCartesian(currentXSpeed, currentYSpeed, currentZRotation);
 		write_info();
 	}
@@ -81,6 +88,8 @@ public class ChasisDriveSubsystem extends Subsystem {
 		SmartDashboard.putNumber("Y Speed", currentYSpeed);
 		SmartDashboard.putNumber("X Speed", currentXSpeed);
 		SmartDashboard.putNumber("Z Rotation", currentZRotation);
+		SmartDashboard.putBoolean("Collision Safety Switch", COLLISION_SAFETY);
+		SmartDashboard.putNumber("Collision Safety Margin", collisionMarginCM);
 	}
 
 	@Override

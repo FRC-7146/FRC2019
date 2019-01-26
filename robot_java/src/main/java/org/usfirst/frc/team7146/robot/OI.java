@@ -15,7 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.usfirst.frc.team7146.robot.commands.AutoAlignCommand;
 import org.usfirst.frc.team7146.robot.commands.CmdBase;
+import org.usfirst.frc.team7146.robot.commands.CollisionSafetyCommand;
 import org.usfirst.frc.team7146.robot.commands.ModeChangeCommand;
+import org.usfirst.frc.team7146.robot.subsystems.ChasisDriveSubsystem;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -24,7 +26,6 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -69,7 +70,7 @@ public class OI {
 			mBtn5 = new JoystickButton(mJoystick1, 5), mBtn6 = new JoystickButton(mJoystick1, 6),
 			mBtn7 = new JoystickButton(mJoystick1, 7);
 
-	public Button autoBtn = mXboxBtnLb, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb;
+	public Button autoBtn = mXboxBtnLb, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb, safetyBtn = mXboxBtnA;
 
 	public ADXRS450_Gyro mGyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	public Accelerometer mAccelerometer = new BuiltInAccelerometer(Accelerometer.Range.k4G);
@@ -107,6 +108,7 @@ public class OI {
 		AutoAlignCommand aa = new AutoAlignCommand();
 		autoBtn.toggleWhenPressed(aa);
 		mTrigger.toggleWhenPressed(aa);
+		mXboxBtnA.toggleWhenPressed(new CollisionSafetyCommand());
 		logger.info("OI map init");
 
 	}

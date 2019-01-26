@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.commands.CmdGroupBase;
 
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -41,45 +40,33 @@ public class StatusSubsystem extends Subsystem {
 				super.execute();
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mStatusSubsystem.write_info();
+				pullDist();
 			}
 		};
 		statusDaemon.publicRequires(this);
 		this.setDefaultCommand(statusDaemon);
 		// setPosition(0);
-		// startBetaIMULocalization();
+	}
+
+	double dstFw = ultraRedFwd.getDistance(), dstBw = ultraRedBwd.getDistance(), dstLw = ultraRedLwd.getDistance(),
+			dstRw = ultraRedRwd.getDistance();
+
+	/**
+	 * 
+	 * @return {F,B,L,R}
+	 */
+	public final double[] getDistances() {
+		double[] arr = { dstFw, dstBw, dstLw, dstRw };
+		return arr;
 	}
 
 	public final void write_info() {
 		// SmartDashboard.putNumber("Encoder Position", getPosition());
-		SmartDashboard.putNumber("acc X ofs", accXofs);
-		SmartDashboard.putNumber("acc X", mAccel.getX() - accXofs);
-		SmartDashboard.putNumber("speed X", speedX += (mAccel.getX() - accXofs));
-		SmartDashboard.putNumber("disp X", dispX += speedX);
-		SmartDashboard.putNumber("[UR] " + ultraRedFwd.getName(), ultraRedFwd.getDistance());
-		SmartDashboard.putNumber("[UR] " + ultraRedBwd.getName(), ultraRedBwd.getDistance());
-		SmartDashboard.putNumber("[UR] " + ultraRedLwd.getName(), ultraRedLwd.getDistance());
-		SmartDashboard.putNumber("[UR] " + ultraRedRwd.getName(), ultraRedRwd.getDistance());
+		SmartDashboard.putNumber("[UR] " + ultraRedFwd.getName(), dstFw);
+		SmartDashboard.putNumber("[UR] " + ultraRedBwd.getName(), dstBw);
+		SmartDashboard.putNumber("[UR] " + ultraRedLwd.getName(), dstLw);
+		SmartDashboard.putNumber("[UR] " + ultraRedRwd.getName(), dstRw);
 	}
-
-	// ===================IMU Work in Progress=========================
-	double accXofs = 0;
-	double speedX = 0, dispX = 0;
-
-	public void startBetaIMULocalization() {
-		calibrateIMU((long) 1e9);
-		double accX = mAccel.getX(), accY = mAccel.getY(), accZ = mAccel.getZ();
-	}
-
-	public void calibrateIMU(long timeNano) {
-		long time = System.nanoTime();
-		int count = 0;
-		while (System.nanoTime() - time < timeNano) {
-			count++;
-			accXofs += mAccel.getX();
-		}
-		accXofs /= count;
-	}
-	// ===================IMU Work in Progress=========================
 
 	/*
 	 * public double getPosition() { return
@@ -88,6 +75,13 @@ public class StatusSubsystem extends Subsystem {
 	 * public ErrorCode setPosition(int newPosition) { return
 	 * mTalon1.getSensorCollection().setQuadraturePosition(newPosition, 19); }
 	 */
+	public void pullDist() {
+		dstFw = dstFw * 0.7 + 0.3 * ultraRedFwd.getDistance();
+		dstBw = dstBw * 0.7 + 0.3 * ultraRedBwd.getDistance();
+		dstLw = dstLw * 0.7 + 0.3 * ultraRedLwd.getDistance();
+		dstRw = dstRw * 0.7 + 0.3 * ultraRedRwd.getDistance();
+	}
+
 	public void pullGyro() {
 		heading = mGyro.getAngle();
 		absHeading = (360 + (heading % 360)) % 360;// Since it could return (-inf,inf)

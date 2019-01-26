@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.RobotMap;
+import org.usfirst.frc.team7146.robot.subsystems.ChasisDriveSubsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -30,14 +31,15 @@ public class ManualControlCommand extends CmdGroupBase {
 				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
 		try {
 			Robot.mOI.grabberServo.set(Math.max(grabberIn, throttle));
+			ChasisDriveSubsystem.collisionMarginCM = throttle * 20;
 			// Manual control overrides auto control if necessary
 			if (!AutoAlignCommand.AUTO_ALIGNING || manualOverAuto()) {
 				if (povIn != -1) {
 					Robot.mChasisDriveSubsystem.pidTurnAbsolute(yIn, xIn, povIn);
-				} else if (isJS1Active()) {
-					Robot.mChasisDriveSubsystem.absoluteSafeDriveCartesian(yIn1, xIn1, zIn1);
-				} else {
+				} else if (isJS0Active()) {
 					Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
+				} else {
+					Robot.mChasisDriveSubsystem.absoluteSafeDriveCartesian(yIn1, xIn1, zIn1);
 				}
 			}
 		} catch (Exception e) {

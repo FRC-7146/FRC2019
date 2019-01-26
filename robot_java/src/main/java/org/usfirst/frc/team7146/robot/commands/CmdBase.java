@@ -26,6 +26,7 @@ public class CmdBase extends Command {
 		this.priority = priority;
 	}
 
+	@Override
 	protected void end() {
 		Robot.mOI.mCommands.remove(this.getName());
 	}
@@ -34,6 +35,7 @@ public class CmdBase extends Command {
 	protected boolean isFinished() {
 		return false;
 	}
+
 	@Override
 	protected void execute() {
 	}
