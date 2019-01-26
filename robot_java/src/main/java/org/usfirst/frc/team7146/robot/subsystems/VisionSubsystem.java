@@ -27,13 +27,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.d0048.Utils;
 import io.github.d0048.vision.SrcTypes;
+import io.github.d0048.vision.CVDataSource;
 
 public class VisionSubsystem extends Subsystem {
     private static final Logger logger = Logger.getLogger(VisionSubsystem.class.getName());
     public static boolean DEBUG = true;
 
-    SendableChooser<CVDataSource> srcChooser = new SendableChooser<CVDataSource>();
-    CVDataSource currentSource = new CVDataSource(SrcTypes.ON_BOARD);
+    public static SendableChooser<CVDataSource> srcChooser = new SendableChooser<CVDataSource>();
+    public static CVDataSource currentSource = new CVDataSource(SrcTypes.ON_BOARD);
 
     public VisionSubsystem() {
         super();
@@ -61,6 +62,7 @@ public class VisionSubsystem extends Subsystem {
     public final void write_info() {
         SmartDashboard.putBoolean("CV Target Status", isCVUsable);
         SmartDashboard.putData("CV Data Source Selection", srcChooser);
+        SmartDashboard.putNumber("Auto Y Offset", target.y);
     }
 
     public final void putCVInfo() {
@@ -144,111 +146,112 @@ public class VisionSubsystem extends Subsystem {
                         logger.warning("Error grabbing fram from camera");
                         isCVUsable = false;
                         continue;
-                    } else {
-                        if (currentSource.src == SrcTypes.PI) {
-                            if (true == SmartDashboard.getBoolean("[PI]CV Target Status", false)) {
-                                cvSrcOut.putFrame(frame);
-                                frame.release();
-                                isCVUsable = true;
-                                continue;
-                            } else {
-                                logger.warning("PI Offline: Falling back to onboard");
+                    }
+                    if (currentSource.src == SrcTypes.PI) {
+                        if (true == SmartDashboard.getBoolean("[PI]CV Target Status", false)) {
+                            cvSrcOut.putFrame(frame);
+                            frame.release();
+                            isCVUsable = true;
+                            continue;
+                        } else {
+                            isCVUsable = true;
+                            logger.warning("PI Offline: Falling back to onboard");
+                        }
+                    }
+                    Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
+                    Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
+                    Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
+                    contours.clear();
+                    maxContours.clear();
+                    Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+                    cvSrcMask.putFrame(dst);
+                    Utils.release(dst);
+                    if (contours.size() >= 2) {
+                        for (int i = 0; i < 2; i++) { // find 2 largest contours
+                            MatOfPoint maxContour = contours.get(0);
+                            double maxArea = minRecArea;// Also threshold of min cont area
+                            for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
+                                MatOfPoint contour = iterator.next();
+                                double area = Imgproc.contourArea(contour);
+                                if (area > maxArea) {
+                                    maxArea = area;
+                                    maxContour = contour;
+                                }
+                            }
+                            maxContours.add(maxContour);
+                            contours.remove(maxContour);
+                        }
+                        if (!contours.isEmpty()) {
+                            double maxArea = Imgproc.contourArea(maxContours.get(0));
+                            for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
+                                MatOfPoint contour = iterator.next();
+                                double area = Imgproc.contourArea(contour);
+                                if (area / maxArea > 0.7 && area > minRecArea) {
+                                    maxContours.add(contour);
+                                    iterator.remove();
+                                }
                             }
                         }
-                        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
-                        Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
-                        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
-                        contours.clear();
-                        maxContours.clear();
-                        Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-                        cvSrcMask.putFrame(dst);
-                        Utils.release(dst);
-                        if (contours.size() >= 2) {
-                            for (int i = 0; i < 2; i++) { // find 2 largest contours
-                                MatOfPoint maxContour = contours.get(0);
-                                double maxArea = minRecArea;// Also threshold of min cont area
-                                for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
-                                    MatOfPoint contour = iterator.next();
-                                    double area = Imgproc.contourArea(contour);
-                                    if (area > maxArea) {
-                                        maxArea = area;
-                                        maxContour = contour;
-                                    }
-                                }
-                                maxContours.add(maxContour);
-                                contours.remove(maxContour);
-                            }
-                            if (!contours.isEmpty()) {
-                                double maxArea = Imgproc.contourArea(maxContours.get(0));
-                                for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
-                                    MatOfPoint contour = iterator.next();
-                                    double area = Imgproc.contourArea(contour);
-                                    if (area / maxArea > 0.7 && area > minRecArea) {
-                                        maxContours.add(contour);
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                            Utils.releaseMoPs(contours);
-                            Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
-                            possibleRects.clear();
-                            MatOfPoint2f cnt = new MatOfPoint2f();
-                            for (MatOfPoint c : maxContours) {
-                                c.convertTo(cnt, CvType.CV_32F);
-                                possibleRects.add(Imgproc.minAreaRect(cnt));
-                                drawRotatedRect(frame, possibleRects.get(possibleRects.size() - 1),
-                                        new Scalar(0, 250, 0), 1);
-                            }
-                            cnt.release();
-                            Utils.releaseMoPs(maxContours);
-                            Point center = centerOf(frame);
-                            label(frame, center, new Scalar(250, 50, 50));
+                        Utils.releaseMoPs(contours);
+                        Imgproc.drawContours(frame, maxContours, -1, new Scalar(100, 256, 0), 1);
+                        possibleRects.clear();
+                        MatOfPoint2f cnt = new MatOfPoint2f();
+                        for (MatOfPoint c : maxContours) {
+                            c.convertTo(cnt, CvType.CV_32F);
+                            possibleRects.add(Imgproc.minAreaRect(cnt));
+                            drawRotatedRect(frame, possibleRects.get(possibleRects.size() - 1), new Scalar(0, 250, 0),
+                                    1);
+                        }
+                        cnt.release();
+                        Utils.releaseMoPs(maxContours);
+                        Point center = centerOf(frame);
+                        label(frame, center, new Scalar(250, 50, 50));
 
-                            double minDist = euclideanDistance(possibleRects.get(0).center, center);
-                            RotatedRect centerRec = possibleRects.get(0);
+                        double minDist = euclideanDistance(possibleRects.get(0).center, center);
+                        RotatedRect centerRec = possibleRects.get(0);
 
-                            for (RotatedRect rec : possibleRects) {
-                                double dist = euclideanDistance(rec.center, center);
-                                if (dist < minDist) {
-                                    minDist = dist;
-                                    centerRec = rec;
-                                }
-                                drawRotatedRect(frame, rec, new Scalar(50, 50, 150), 3);
+                        for (RotatedRect rec : possibleRects) {
+                            double dist = euclideanDistance(rec.center, center);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                centerRec = rec;
                             }
-                            drawRotatedRect(frame, centerRec, new Scalar(250, 100, 250), 4);
+                            drawRotatedRect(frame, rec, new Scalar(50, 50, 150), 3);
+                        }
+                        drawRotatedRect(frame, centerRec, new Scalar(250, 100, 250), 4);
 
-                            // Right one: rot > -45
-                            // Left one: rot < -45
-                            RotatedRect matchedRec = null;
-                            if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec,
-                                    possibleRects)) != null) {// if left one then search right for a right one
-                                Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
-                                        Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
-                                drawRotatedRect(frame, centerRec, new Scalar(256, 160, 256), 4);
-                                Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
-                                target.x = (centerRec.center.x + matchedRec.center.x) / 2;
-                                target.y = (centerRec.center.y + matchedRec.center.y) / 2;
-                                label(frame, center, new Scalar(0, 0, 0));
-                                label(frame, target, new Scalar(250, 50, 50));
-                                realTarget = target.clone();
-                                target.x -= center.x;
-                                target.y -= center.y;
-                                isCVUsable = true;
-                            } else {
-                                isCVUsable = false;
-                            }
+                        // Right one: rot > -45
+                        // Left one: rot < -45
+                        RotatedRect matchedRec = null;
+                        if ((matchedRec = searchClosestRectMatch(isLeft(centerRec), centerRec,
+                                possibleRects)) != null) {// if left one then search right for a right one
+                            Imgproc.putText(frame, isLeft(centerRec) ? "-->" : "<--", centerRec.center,
+                                    Core.FONT_HERSHEY_PLAIN, 2, new Scalar(250, 100, 250), 1);
+                            drawRotatedRect(frame, centerRec, new Scalar(256, 160, 256), 4);
+                            Imgproc.line(frame, centerRec.center, matchedRec.center, new Scalar(250, 100, 250), 5);
+                            target.x = (centerRec.center.x + matchedRec.center.x) / 2;
+                            target.y = (centerRec.center.y + matchedRec.center.y) / 2;
+                            label(frame, center, new Scalar(0, 0, 0));
+                            label(frame, target, new Scalar(250, 50, 50));
+                            realTarget = target.clone();
+                            target.x -= center.x;
+                            target.y -= center.y;
+                            isCVUsable = true;
                         } else {
                             isCVUsable = false;
                         }
-
-                        cvSrcOut.putFrame(frame);
-                        Utils.release(frame);
-                        // Garbage Collection
-                        if (gcIteration++ > 60) {
-                            System.gc();
-                            gcIteration = 0;
-                        }
+                    } else {
+                        isCVUsable = false;
                     }
+
+                    cvSrcOut.putFrame(frame);
+                    Utils.release(frame);
+                    // Garbage Collection
+                    if (gcIteration++ > 60) {
+                        System.gc();
+                        gcIteration = 0;
+                    }
+
                 } catch (Exception e) {
                     logger.warning("Error in CV Thread:");
                     e.printStackTrace();
@@ -328,32 +331,5 @@ public class VisionSubsystem extends Subsystem {
     void debug(String s) {
         if (DEBUG)
             logger.warning(s);
-    }
-}
-
-// Just utilizing the command so I don't have to reimplement SendableBase
-class CVDataSource extends Command {
-    SrcTypes src = SrcTypes.ON_BOARD;
-
-    public CVDataSource(SrcTypes s) {
-        super();
-        this.src = s;
-    }
-
-    @Override
-    public String toString() {
-        switch (src) {
-        case ON_BOARD:
-            return "ON_BOARD";
-        case PI:
-            return "PI";
-        default:
-            return "UNKOWN";
-        }
-    }
-
-    @Override
-    protected boolean isFinished() {
-        return true;
     }
 }

@@ -90,7 +90,7 @@ public class RobotMap {
 		}
 
 		public static class AUTO extends NORMAL {
-			public double X_LIMIT = 0.5, Y_LIMIT = 0.4, Z_LIMIT = 0.5;
+			public double X_LIMIT = 0.5, Y_LIMIT = 0.5, Z_LIMIT = 0.5;
 
 			@Override
 			public String toString() {

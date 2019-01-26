@@ -6,33 +6,11 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.MjpegServer;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSource;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.vision.VisionPipeline;
-import edu.wpi.first.vision.VisionThread;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -43,6 +21,12 @@ import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.vision.VisionPipeline;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class MyPipeline implements VisionPipeline {
 
@@ -58,12 +42,10 @@ public class MyPipeline implements VisionPipeline {
     Scalar LOWER_BOUND = new Scalar(70, 60, 60), UPPER_BOUND = new Scalar(100, 360, 360);
     public static int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
 
-    public static int lazynessIDLE = 2;
-    public static int lazyness = lazynessIDLE;
-
     public static boolean isCVEnabled = true;
     public static boolean isCVUsable = false;
     public static Point target = new Point(), realTarget = new Point();
+    double recX = 0, recY = 0, recZ = 0;
 
     public MyPipeline() {
         super();
@@ -171,6 +153,8 @@ public class MyPipeline implements VisionPipeline {
                     target.x -= center.x;
                     target.y -= center.y;
                     isCVUsable = true;
+                    recX = center.x > 0 ? 0.3 : -0.3;
+                    recY = Math.abs(center.x) < 40 ? 0.4 : 0;
                 } else {
                     isCVUsable = false;
                 }
@@ -194,7 +178,10 @@ public class MyPipeline implements VisionPipeline {
 
     public final void write_info() {
         SmartDashboard.putBoolean("[PI]CV Target Status", isCVUsable);
-        SmartDashboard.putBoolean("[PI]CV Target Status", isCVUsable);
+        SmartDashboard.putNumber("[PI]Recommended X", recX);
+        SmartDashboard.putNumber("[PI]Recommended Y", recY);
+        SmartDashboard.putNumber("[PI]Recommended Z", recZ);
+        SmartDashboard.putNumber("[PI]Auto Y Offset", target.y);
     }
 
     public final void putCVInfo() {
@@ -305,37 +292,6 @@ class Utils {
         absVecRet[1] = Math.cos(absHeading) * relX - Math.sin(absHeading) * relY; // cal X
         absVecRet[0] = Math.sin(absHeading) * relX + Math.cos(absHeading) * relY; // cal Y
         return absVecRet;
-    }
-
-    // TODO: It's actually 53 degree instead of 45
-    static final double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
-
-    /**
-     * @return The nearest angle needed for hatch panel
-     */
-    public static final double nearestHatchAngle(double currentAngle) {
-        double maxdiff = 360, nearestAngle = 0;
-        for (double a : allAngles) {
-            double diff = Math.abs(a - currentAngle);
-            if (diff < maxdiff) {
-                maxdiff = diff;
-                nearestAngle = a;
-            }
-        }
-        return nearestAngle;
-    }
-
-    public static final double speedCalc(double input, double absLimit, double sensitivity) {
-        double ret = (input * absLimit);
-        if (Math.abs(ret) > absLimit) {
-            if (input > 0) {
-                return absLimit;
-            } else {
-                return -absLimit;
-            }
-        }
-        // return ret;
-        return ret > 0 ? ret + sensitivity : ret - sensitivity;
     }
 
     public static final void release(Mat o) {

@@ -10,6 +10,8 @@ import org.usfirst.frc.team7146.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.d0048.Utils;
+import io.github.d0048.vision.SrcTypes;
+import io.github.d0048.vision.CVDataSource;
 
 public class AutoAlignCommand extends CmdGroupBase {
 	private static final Logger logger = Logger.getLogger(AutoAlignCommand.class.getName());
@@ -44,22 +46,32 @@ public class AutoAlignCommand extends CmdGroupBase {
 
 	@Override
 	protected void execute() {
-		if (VisionSubsystem.isCVEnabled && VisionSubsystem.isCVUsable
-				&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = VisionSubsystem.target.x))) < 15) {
-			dataEligiable = true;
-			if (!ManualControlCommand.manualOverAuto()) {
+		if (!ManualControlCommand.manualOverAuto()) {// Human have highest priority
+			if (VisionSubsystem.currentSource.src == SrcTypes.PI && VisionSubsystem.isCVUsable) {
+				double xVec = SmartDashboard.getNumber("[PI]Recommended X", 0),
+						yVec = SmartDashboard.getNumber("[PI]Recommended Y", 0),
+						zRot = SmartDashboard.getNumber("[PI]Recommended Z", 0);
+				if (zRot == 0)
+					Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
+							Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
+				else
+					Robot.mChasisDriveSubsystem.safeDriveCartesian(yVec, xVec, zRot);
+			} else if (VisionSubsystem.isCVEnabled && VisionSubsystem.isCVUsable
+					&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = VisionSubsystem.target.x))) < 15) {
+				dataEligiable = true;
+
 				double yVec = 0, xVec = dataOffset / (dataOffset > 20 ? 70 : 45);
-				xVec = xVec > 0 ? (xVec + 0.05) : (xVec - 0.05);
+				xVec = xVec > 0 ? (xVec + 0.08) : (xVec - 0.08);
 				xVec = Math.abs(dataOffset) < 2 ? 0 : xVec;
-				yVec = Math.abs(dataOffset) < 10 ? 0.4 : 0;// drive forward
+				yVec = Math.abs(dataOffset) < 10 ? 0.5 : 0;// drive forward
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
 						Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
+			} else {
+				Robot.mChasisDriveSubsystem.pidTurnAbsolute(0, 0,
+						Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
+				dataEligiable = false;
 			}
-		} else if (!ManualControlCommand.manualOverAuto()) {
-			Robot.mChasisDriveSubsystem.pidTurnAbsolute(0, 0,
-					Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));
-			dataEligiable = false;
 		}
 		lastTarget = VisionSubsystem.target.clone();
 		writeStatus();
@@ -81,8 +93,8 @@ public class AutoAlignCommand extends CmdGroupBase {
 	public final void writeStatus() {
 		SmartDashboard.putBoolean("Auto Align Enabled", AUTO_ALIGNING);
 		SmartDashboard.putBoolean("Auto Align Data Eligible", dataEligiable);
-		SmartDashboard.putNumber("Auto Y Offset", dataOffset);
 		SmartDashboard.putNumber("Auto Noise Value", sampleVariance);
+		SmartDashboard.putNumber("Auto Y Offset", dataOffset);
 	}
 
 	@Override
