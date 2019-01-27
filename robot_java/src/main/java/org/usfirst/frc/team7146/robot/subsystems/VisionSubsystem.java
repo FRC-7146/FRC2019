@@ -21,6 +21,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,22 +41,30 @@ public class VisionSubsystem extends Subsystem {
         srcChooser.setDefaultOption(SrcTypes.ON_BOARD.toString(), new CVDataSource(SrcTypes.ON_BOARD));
         srcChooser.addOption(SrcTypes.PI.toString(), new CVDataSource(SrcTypes.PI));
         currentSource = srcChooser.getSelected();
+        putCVInfo();
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
+                try {
+                    pollSDBConfig();
+                    write_info();
+                    Thread.sleep(100, 0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        startVisionDeamon();
     }
 
     @Override
     protected void initDefaultCommand() {
-        CmdGroupBase visionDaemon = new CmdGroupBase("Vision Deamon", 100) {
-            @Override
-            protected void execute() {
-                super.execute();
-                pollSDBConfig();
-                write_info();
-            }
-        };
-        visionDaemon.publicRequires(this);
-        this.setDefaultCommand(visionDaemon);
-        putCVInfo();
-        startVisionDeamon();
+        /*
+         * CmdGroupBase visionDaemon = new CmdGroupBase("Vision Deamon", 100) {
+         * 
+         * @Override protected void execute() { super.execute(); pollSDBConfig();
+         * write_info(); } }; visionDaemon.publicRequires(this);
+         * this.setDefaultCommand(visionDaemon);
+         */
     }
 
     public final void write_info() {
@@ -92,7 +101,8 @@ public class VisionSubsystem extends Subsystem {
             minRecArea = SmartDashboard.getNumber("Minimun Rectangle Area", minRecArea);
             currentSource = srcChooser.getSelected();
         } catch (Exception e) {
-            logger.warning("[CV] poll failed:" + e.getMessage());
+            logger.warning("[CV] poll failed:");
+            e.printStackTrace();
         }
     }
 
@@ -103,7 +113,7 @@ public class VisionSubsystem extends Subsystem {
     CvSource cvSrcOut, cvSrcMask;
     int[] resolution = { 40, 100 };
     Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
-    public static int EXPLOSURE = 0;
+    public static int EXPLOSURE = -1;
 
     public static int lazynessIDLE = 2;
     public static int lazyness = lazynessIDLE;
@@ -147,7 +157,7 @@ public class VisionSubsystem extends Subsystem {
                         continue;
                     }
                     if (currentSource.src == SrcTypes.PI) {
-                        if (true == SmartDashboard.getBoolean("[PI]CV Target Status", false)) {
+                        if (true == SmartDashboard.getBoolean("[PI]Online", false)) {
                             cvSrcOut.putFrame(frame);
                             frame.release();
                             isCVUsable = true;
@@ -163,7 +173,8 @@ public class VisionSubsystem extends Subsystem {
                     contours.clear();
                     maxContours.clear();
                     Imgproc.findContours(dst, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-                    cvSrcMask.putFrame(dst);
+                    if (DriverStation.getInstance().isDisabled())
+                        cvSrcMask.putFrame(dst);
                     Utils.release(dst);
                     if (contours.size() >= 2) {
                         for (int i = 0; i < 2; i++) { // find 2 largest contours
@@ -242,7 +253,6 @@ public class VisionSubsystem extends Subsystem {
                     } else {
                         isCVUsable = false;
                     }
-
                     cvSrcOut.putFrame(frame);
                     Utils.release(frame);
                     // Garbage Collection

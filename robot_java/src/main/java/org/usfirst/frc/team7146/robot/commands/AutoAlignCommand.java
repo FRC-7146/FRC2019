@@ -59,9 +59,10 @@ public class AutoAlignCommand extends CmdGroupBase {
 					&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = VisionSubsystem.target.x))) < 15) {
 				dataEligiable = true;
 
-				double yVec = 0, xVec = dataOffset / (dataOffset > 20 ? 70 : 45);
-				xVec = xVec > 0 ? (xVec + 0.08) : (xVec - 0.08);
-				xVec = Math.abs(dataOffset) < 2 ? 0 : xVec;
+				double yVec = 0, xVec = dataOffset / (dataOffset > 40 ? 70 : 50);
+				xVec = (Math.abs(dataOffset) > 10 && Math.abs(dataOffset) > 40) ? (xVec + 0.15) : (xVec - 0.15);
+				xVec = Math.abs(dataOffset) < 5 ? 0 : xVec;
+
 				yVec = Math.abs(dataOffset) < 10 ? 0.5 : 0;// drive forward
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,

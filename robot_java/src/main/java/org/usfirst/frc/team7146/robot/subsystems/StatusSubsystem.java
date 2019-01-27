@@ -34,17 +34,26 @@ public class StatusSubsystem extends Subsystem {
 
 	@Override
 	protected void initDefaultCommand() {
-		CmdGroupBase statusDaemon = new CmdGroupBase("Status Deamon", 100) {
-			@Override
-			protected void execute() {
-				super.execute();
+		/*
+		 * CmdGroupBase statusDaemon = new CmdGroupBase("Status Deamon", 100) {
+		 * 
+		 * @Override protected void execute() { super.execute();
+		 * Robot.mStatusSubsystem.pullGyro(); Robot.mStatusSubsystem.write_info();
+		 * pullDist(); } }; statusDaemon.publicRequires(this);
+		 * this.setDefaultCommand(statusDaemon);
+		 */
+		new Thread(() -> {
+			while (!Thread.interrupted()) {
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mStatusSubsystem.write_info();
 				pullDist();
+				try {
+					Thread.sleep(50, 0);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-		};
-		statusDaemon.publicRequires(this);
-		this.setDefaultCommand(statusDaemon);
+		}).start();
 		// setPosition(0);
 	}
 
