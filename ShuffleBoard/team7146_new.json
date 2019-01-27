@@ -108,8 +108,8 @@
           },
           "6,0": {
             "size": [
-              3,
-              2
+              4,
+              4
             ],
             "content": {
               "_type": "Grid Layout",
@@ -253,25 +253,6 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "17,0": {
-            "size": [
-              7,
-              5
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://src out",
-              "_title": "src out",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 100.0,
-              "fps": -1,
-              "imageWidth": 0,
-              "imageHeight": 0
-            }
-          },
           "6,5": {
             "size": [
               2,
@@ -285,8 +266,8 @@
           },
           "8,4": {
             "size": [
-              2,
-              4
+              3,
+              7
             ],
             "content": {
               "_type": "Grid Layout",
@@ -338,10 +319,10 @@
               }
             }
           },
-          "17,5": {
+          "18,4": {
             "size": [
               7,
-              5
+              7
             ],
             "content": {
               "_type": "Camera Stream",
@@ -357,10 +338,10 @@
               "imageHeight": 0
             }
           },
-          "17,10": {
+          "18,0": {
             "size": [
-              3,
-              2
+              7,
+              4
             ],
             "content": {
               "_type": "Camera Stream",
@@ -374,6 +355,60 @@
               "fps": -1,
               "imageWidth": 0,
               "imageHeight": 0
+            }
+          },
+          "6,10": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Collision Safety Switch",
+              "_title": "/SmartDashboard/Collision Safety Switch",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,8": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Collision Safety Margin",
+              "_title": "/SmartDashboard/Collision Safety Margin"
+            }
+          },
+          "11,4": {
+            "size": [
+              6,
+              6
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 0",
+              "_title": "USB Camera 0",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "10,2": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/CV Data Source Selection",
+              "_title": "SmartDashboard/CV Data Source Selection"
             }
           }
         }
@@ -400,50 +435,6 @@
               "_title": "/LiveWindow/Ungrouped/Scheduler"
             }
           },
-          "4,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/disp X",
-              "_title": "/SmartDashboard/disp X"
-            }
-          },
-          "4,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/speed X",
-              "_title": "/SmartDashboard/speed X"
-            }
-          },
-          "4,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/acc X",
-              "_title": "/SmartDashboard/acc X"
-            }
-          },
-          "4,5": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/acc X ofs",
-              "_title": "/SmartDashboard/acc X ofs"
-            }
-          },
           "7,0": {
             "size": [
               2,
@@ -455,16 +446,7 @@
               "Layout/Number of columns": 3,
               "Layout/Number of rows": 3,
               "Layout/Label position": "BOTTOM",
-              "_children": {
-                "1,0": {
-                  "_type": "Simple Dial",
-                  "_source0": "network_table:///SmartDashboard/[UR] Forward",
-                  "_title": "[UR] Forward",
-                  "Range/Min": 0.0,
-                  "Range/Max": 2500.0,
-                  "Visuals/Show value": true
-                }
-              }
+              "_children": {}
             }
           },
           "5,2": {
@@ -479,6 +461,63 @@
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
+          },
+          "8,3": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://src mask",
+              "_title": "src mask",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "9,1": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://src out",
+              "_title": "src out",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "5,3": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 0",
+              "_title": "USB Camera 0",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
           }
         }
       }
@@ -487,7 +526,7 @@
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1918.0,
-    "height": 1051.0
+    "width": 1920.0,
+    "height": 1080.0
   }
 }
