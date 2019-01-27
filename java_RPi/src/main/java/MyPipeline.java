@@ -17,10 +17,13 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
@@ -34,18 +37,19 @@ public class MyPipeline implements VisionPipeline {
     public static boolean DEBUG = true;
 
     public static double minRecArea = 25;
-    // public CameraServer mCameraServer;
-    // public UsbCamera mUsbCamera;
     CvSink cvSink;
-    CvSource cvSrcOut, cvSrcMask;
+    CvSource cvSrcOut;
     int[] resolution = { 600, 800 };
     Scalar LOWER_BOUND = new Scalar(70, 60, 60), UPPER_BOUND = new Scalar(100, 360, 360);
-    public static int EXPLOSURE = -1;// TODO: Calibrate Camera EXPLOSURE
+    public static int EXPLOSURE = -1;
 
     public static boolean isCVEnabled = true;
     public static boolean isCVUsable = false;
     public static Point target = new Point(), realTarget = new Point();
     double recX = 0, recY = 0, recZ = 0;
+
+    String hatchCascadeXMLPath = "/boot/cascades/hatch.xml";
+    CascadeClassifier hatchDetector = new CascadeClassifier(hatchCascadeXMLPath);
 
     public MyPipeline() {
         super();
@@ -55,20 +59,23 @@ public class MyPipeline implements VisionPipeline {
             new Thread(() -> {
                 while (!Thread.interrupted()) {
                     pollSDBConfig();
+                    write_info();
                     try {
-                        Thread.sleep(400, 0);
+                        Thread.sleep(100, 0);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
+
+            // Cascade xml file Init
         } catch (Exception e) {
             logger.warning("[CV] init failed:");
             e.printStackTrace();
         }
     }
 
-    int gcIteration = 0, lazyIteration = 0;
+    int gcIteration = 0;
     Mat dst = new Mat();
     List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
     List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
@@ -77,6 +84,7 @@ public class MyPipeline implements VisionPipeline {
     @Override
     public void process(Mat frame) {
         try {
+            cascadeDetection(frame);
             Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
             Core.inRange(frame, LOWER_BOUND, UPPER_BOUND, dst);
             Imgproc.cvtColor(frame, frame, Imgproc.COLOR_HSV2BGR);
@@ -176,6 +184,21 @@ public class MyPipeline implements VisionPipeline {
 
     }
 
+    public void cascadeDetection(Mat frame) {
+        MatOfRect hatchVectors = new MatOfRect();
+        Imgproc.cvtColor(frame, dst, Imgproc.COLOR_BGR2GRAY);
+        hatchDetector.detectMultiScale(frame, hatchVectors);
+        if (hatchVectors.toArray().length > 0)
+            System.out.println(hatchVectors.toArray().length + " faces found");
+
+        for (Rect rect : hatchVectors.toArray()) {
+            Imgproc.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                    new Scalar(0, 255, 0));
+        }
+        hatchVectors.release();
+        dst.release();
+    }
+
     public final void write_info() {
         SmartDashboard.putBoolean("[PI]CV Target Status", isCVUsable);
         SmartDashboard.putNumber("[PI]Recommended X", recX);
@@ -184,7 +207,7 @@ public class MyPipeline implements VisionPipeline {
         SmartDashboard.putNumber("[PI]Auto Y Offset", target.y);
     }
 
-    public final void putCVInfo() {
+    public final void putCVInfo() {// run once
         SmartDashboard.putNumber("HIGH H", UPPER_BOUND.val[0]);
         SmartDashboard.putNumber("HIGH S", UPPER_BOUND.val[1]);
         SmartDashboard.putNumber("HIGH V", UPPER_BOUND.val[2]);
@@ -193,6 +216,7 @@ public class MyPipeline implements VisionPipeline {
         SmartDashboard.putNumber("LOW V", LOWER_BOUND.val[2]);
         SmartDashboard.putNumber("EXPLOSURE(-1: auto)", EXPLOSURE);
         SmartDashboard.putNumber("Minimun Rectangle Area", minRecArea);
+        SmartDashboard.putString("[PI]Hatch Cascade XML Path", hatchCascadeXMLPath);
     }
 
     public final void pollSDBConfig() {
@@ -204,6 +228,7 @@ public class MyPipeline implements VisionPipeline {
             LOWER_BOUND.val[1] = SmartDashboard.getNumber("LOW S", LOWER_BOUND.val[1]);
             LOWER_BOUND.val[2] = SmartDashboard.getNumber("LOW V", LOWER_BOUND.val[2]);
             EXPLOSURE = (int) SmartDashboard.getNumber("EXPLOSURE(-1: auto)", EXPLOSURE);
+            hatchCascadeXMLPath = SmartDashboard.getString("[PI]Hatch Cascade XML Path", hatchCascadeXMLPath);
         } catch (Exception e) {
             logger.warning("[CV] poll failed:" + e.getMessage());
         }
