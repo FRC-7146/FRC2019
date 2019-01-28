@@ -13,7 +13,7 @@ public class Utils {
 
 	public static final double collisionCalc(double posDst, double negDst, double valIn, double collisionMarginDst) {
 		double dst = valIn > 0 ? posDst : negDst;
-		return dst > collisionMarginDst ? valIn : 0;
+		return dst > collisionMarginDst ? valIn : (valIn > 0 ? -0.5 : 0.5);
 	}
 
 	public static double[] absVecRet = { 0, 0 };// Y,X

@@ -7,6 +7,7 @@ import org.usfirst.frc.team7146.robot.Robot;
 import org.usfirst.frc.team7146.robot.RobotMap;
 import org.usfirst.frc.team7146.robot.subsystems.VisionSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.d0048.Utils;
@@ -27,6 +28,8 @@ public class AutoAlignCommand extends CmdGroupBase {
 	@Override
 	public synchronized void start() {
 		super.start();
+		if (DriverStation.getInstance().isDisabled())
+			return;
 		VisionSubsystem.lazyness = 0;
 		VisionSubsystem.isCVUsable = false;
 		RobotMap.MOTOR.CURRENT_MODE = new RobotMap.MOTOR.AUTO();
@@ -59,11 +62,11 @@ public class AutoAlignCommand extends CmdGroupBase {
 					&& (sampleVariance = Math.abs(lastTarget.x - (dataOffset = VisionSubsystem.target.x))) < 15) {
 				dataEligiable = true;
 
-				double yVec = 0, xVec = dataOffset / (dataOffset > 40 ? 70 : 50);
-				xVec = (Math.abs(dataOffset) > 10 && Math.abs(dataOffset) > 40) ? (xVec + 0.15) : (xVec - 0.15);
+				double yVec = 0, xVec = dataOffset / 40;
+				xVec = Math.abs(xVec) < 10 ? (xVec > 0 ? (xVec + 0.3) : (xVec - 0.3)) : 0;
 				xVec = Math.abs(dataOffset) < 5 ? 0 : xVec;
 
-				yVec = Math.abs(dataOffset) < 10 ? 0.5 : 0;// drive forward
+				yVec = Math.abs(dataOffset) < 10 ? 0.6 : 0;// drive forward
 				Robot.mStatusSubsystem.pullGyro();
 				Robot.mChasisDriveSubsystem.pidTurnAbsolute(yVec, xVec,
 						Utils.nearestHatchAngle(Robot.mStatusSubsystem.absHeading));

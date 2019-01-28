@@ -65,6 +65,7 @@ public class StatusSubsystem extends Subsystem {
 	 * @return {F,B,L,R}
 	 */
 	public final double[] getDistances() {
+		pullDist();
 		double[] arr = { dstFw, dstBw, dstLw, dstRw };
 		return arr;
 	}
@@ -85,10 +86,10 @@ public class StatusSubsystem extends Subsystem {
 	 * mTalon1.getSensorCollection().setQuadraturePosition(newPosition, 19); }
 	 */
 	public void pullDist() {
-		dstFw = dstFw * 0.7 + 0.3 * ultraRedFwd.getDistance();
-		dstBw = dstBw * 0.7 + 0.3 * ultraRedBwd.getDistance();
-		dstLw = dstLw * 0.7 + 0.3 * ultraRedLwd.getDistance();
-		dstRw = dstRw * 0.7 + 0.3 * ultraRedRwd.getDistance();
+		dstFw = dstFw * 0.5 + 0.5 * ultraRedFwd.getDistance();
+		dstBw = dstBw * 0.5 + 0.5 * ultraRedBwd.getDistance();
+		dstLw = dstLw * 0.5 + 0.5 * ultraRedLwd.getDistance();
+		dstRw = dstRw * 0.5 + 0.5 * ultraRedRwd.getDistance();
 	}
 
 	public void pullGyro() {

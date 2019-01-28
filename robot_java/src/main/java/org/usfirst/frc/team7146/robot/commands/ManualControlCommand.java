@@ -31,7 +31,7 @@ public class ManualControlCommand extends CmdGroupBase {
 				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
 		try {
 			Robot.mOI.grabberServo.set(Math.max(grabberIn, throttle));
-			ChasisDriveSubsystem.collisionMarginCM = throttle * 20;
+			// ChasisDriveSubsystem.collisionMarginCM = throttle * 20;
 			// Manual control overrides auto control if necessary
 			if (!AutoAlignCommand.AUTO_ALIGNING || manualOverAuto()) {
 				if (povIn != -1) {
@@ -65,7 +65,7 @@ public class ManualControlCommand extends CmdGroupBase {
 	}
 
 	public static final boolean manualOverAuto() {
-		return isJS0Active() || isJS1Active();
+		return isJS0Active() || isJS1Active() || !AutoAlignCommand.AUTO_ALIGNING;
 	}
 
 	public static final boolean isJS0Active() {
@@ -76,9 +76,8 @@ public class ManualControlCommand extends CmdGroupBase {
 
 	public static final boolean isJS1Active() {
 		Joystick js1 = Robot.mOI.mJoystick1;
-		double xIn1 = js1.getRawAxis(0), yIn1 = -js1.getRawAxis(1), zIn1 = js1.getRawAxis(2),
-				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
-		return (Math.abs(xIn1) + Math.abs(yIn1) + Math.abs(zIn1) > 0.1) || povIn1 != -1;
+		double xIn1 = js1.getRawAxis(0), yIn1 = -js1.getRawAxis(1), zIn1 = js1.getRawAxis(2);
+		return (Math.abs(xIn1) + Math.abs(yIn1) + Math.abs(zIn1) > 0.1);
 	}
 
 	@Override

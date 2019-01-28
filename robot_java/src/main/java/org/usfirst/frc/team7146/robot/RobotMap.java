@@ -23,7 +23,7 @@ public class RobotMap {
 		public static NORMAL CURRENT_MODE = new NORMAL();
 
 		public static class NORMAL {
-			public double X_LIMIT = 0.4, Y_LIMIT = 0.4, Z_LIMIT = 0.3;
+			public double X_LIMIT = 0.8, Y_LIMIT = 0.8, Z_LIMIT = 0.8;
 			// public double X_SENSITIVITY = 0.1, Y_SENSITIVITY = 0.15, Z_SENSITIVITY =
 			// 0.15;
 			public double X_SENSITIVITY = 0.04, Y_SENSITIVITY = 0.04, Z_SENSITIVITY = 0;
@@ -69,7 +69,7 @@ public class RobotMap {
 		}
 
 		public static class SPORT extends NORMAL {
-			public double X_LIMIT = 0.9, Y_LIMIT = 0.7, Z_LIMIT = 0.8;
+			public double X_LIMIT = 1, Y_LIMIT = 1, Z_LIMIT = 1;
 
 			@Override
 			public String toString() {

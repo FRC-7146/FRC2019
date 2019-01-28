@@ -113,7 +113,7 @@ public class VisionSubsystem extends Subsystem {
     CvSource cvSrcOut, cvSrcMask;
     int[] resolution = { 40, 100 };
     Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
-    public static int EXPLOSURE = -1;
+    public static int EXPLOSURE = 0;
 
     public static int lazynessIDLE = 2;
     public static int lazyness = lazynessIDLE;

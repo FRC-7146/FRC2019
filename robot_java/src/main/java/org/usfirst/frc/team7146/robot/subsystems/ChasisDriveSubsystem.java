@@ -34,6 +34,7 @@ public class ChasisDriveSubsystem extends Subsystem {
 	public double currentYSpeed = 0, currentXSpeed = 0, currentZRotation = 0;
 
 	public ChasisDriveSubsystem() {
+		put_config();
 	}
 
 	// TODO: Can not turn negative for some reason
@@ -64,8 +65,8 @@ public class ChasisDriveSubsystem extends Subsystem {
 				RobotMap.MOTOR.CURRENT_MODE.Z_SENSITIVITY);
 		if (COLLISION_SAFETY) {
 			double[] dsts = status.getDistances();
-			currentXSpeed = Utils.collisionCalc(dsts[2], dsts[3], currentXSpeed, collisionMarginCM);
-			currentXSpeed = Utils.collisionCalc(dsts[0], dsts[1], currentYSpeed, collisionMarginCM);
+			currentXSpeed = Utils.collisionCalc(dsts[3], dsts[2], currentXSpeed, collisionMarginCM);// x limit
+			currentYSpeed = Utils.collisionCalc(dsts[0], dsts[1], currentYSpeed, collisionMarginCM);// y limit
 		}
 		drive.driveCartesian(currentXSpeed, currentYSpeed, currentZRotation);
 		write_info();
@@ -89,7 +90,14 @@ public class ChasisDriveSubsystem extends Subsystem {
 		SmartDashboard.putNumber("X Speed", currentXSpeed);
 		SmartDashboard.putNumber("Z Rotation", currentZRotation);
 		SmartDashboard.putBoolean("Collision Safety Switch", COLLISION_SAFETY);
+	}
+
+	public final void put_config() {// run once
 		SmartDashboard.putNumber("Collision Safety Margin", collisionMarginCM);
+	}
+
+	public final void poll_config() {
+		collisionMarginCM = SmartDashboard.getNumber("Collision Safety Margin", collisionMarginCM);
 	}
 
 	@Override
@@ -99,8 +107,10 @@ public class ChasisDriveSubsystem extends Subsystem {
 
 			@Override
 			protected void execute() {
-				if (i)
+				if (i) {
 					Robot.mChasisDriveSubsystem.write_info();
+					poll_config();
+				}
 				i = !i;
 			}
 
