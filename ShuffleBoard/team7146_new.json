@@ -108,7 +108,7 @@
           },
           "6,0": {
             "size": [
-              4,
+              5,
               4
             ],
             "content": {
@@ -319,48 +319,10 @@
               }
             }
           },
-          "18,4": {
+          "7,6": {
             "size": [
-              7,
-              7
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://PI out",
-              "_title": "PI out",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": -1.0,
-              "fps": -1,
-              "imageWidth": 0,
-              "imageHeight": 0
-            }
-          },
-          "18,0": {
-            "size": [
-              7,
-              4
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://rPi Camera 0",
-              "_title": "rPi Camera 0",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": -1.0,
-              "fps": -1,
-              "imageWidth": 0,
-              "imageHeight": 0
-            }
-          },
-          "6,10": {
-            "size": [
-              2,
-              2
+              1,
+              1
             ],
             "content": {
               "_type": "Boolean Box",
@@ -370,10 +332,10 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "6,8": {
+          "6,6": {
             "size": [
-              2,
-              2
+              1,
+              1
             ],
             "content": {
               "_type": "Text View",
@@ -381,26 +343,7 @@
               "_title": "/SmartDashboard/Collision Safety Margin"
             }
           },
-          "11,4": {
-            "size": [
-              6,
-              6
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://USB Camera 0",
-              "_title": "USB Camera 0",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": -1.0,
-              "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
-            }
-          },
-          "10,2": {
+          "11,11": {
             "size": [
               3,
               2
@@ -408,7 +351,58 @@
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/CV Data Source Selection",
-              "_title": "SmartDashboard/CV Data Source Selection"
+              "_title": "/SmartDashboard/CV Data Source Selection"
+            }
+          },
+          "11,4": {
+            "size": [
+              7,
+              7
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://src out",
+              "_title": "src out",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
+            }
+          },
+          "18,11": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/[PI]CV Target Status",
+              "_title": "/SmartDashboard/[PI]CV Target Status",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "18,4": {
+            "size": [
+              8,
+              7
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://PI Out",
+              "_title": "PI Out",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 100.0,
+              "fps": -1,
+              "imageWidth": 0,
+              "imageHeight": 0
             }
           }
         }
@@ -496,8 +490,8 @@
               "Controls/Rotation": "NONE",
               "compression": -1.0,
               "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
+              "imageWidth": 0,
+              "imageHeight": 0
             }
           },
           "5,3": {
@@ -526,7 +520,7 @@
   "windowGeometry": {
     "x": 0.0,
     "y": 0.0,
-    "width": 1920.0,
-    "height": 1080.0
+    "width": 1918.0,
+    "height": 1051.0
   }
 }
