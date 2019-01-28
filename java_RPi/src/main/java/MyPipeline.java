@@ -187,7 +187,7 @@ public class MyPipeline implements VisionPipeline {
     public void cascadeDetection(Mat frame) {
         MatOfRect hatchVectors = new MatOfRect();
         Imgproc.cvtColor(frame, dst, Imgproc.COLOR_BGR2GRAY);
-        hatchDetector.detectMultiScale(frame, hatchVectors);
+        hatchDetector.detectMultiScale(frame, hatchVectors, 3, 200);
         if (hatchVectors.toArray().length > 0)
             System.out.println(hatchVectors.toArray().length + " faces found");
 
