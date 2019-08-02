@@ -30,16 +30,31 @@ public class ManualControlCommand extends CmdGroupBase {
 		double xIn1 = js1.getRawAxis(0), yIn1 = -js1.getRawAxis(1), zIn1 = js1.getRawAxis(2),
 				throttle = js1.getRawAxis(3), povIn1 = js1.getPOV();
 		try {
-			Robot.mOI.grabberServo.set(Math.max(grabberIn, throttle));
+			Robot.mOI.grabberServo.set((throttle + 1) / 2);
+			Robot.mOI.ballMotor.set(throttle);
+			Robot.mOI.liftMotor.set(grabberIn);
+			if (Robot.mOI.mBtn7.get()) {
+				Robot.mOI.liftMotor.set(1);
+			}
+			if (Robot.mOI.mBtn11.get()) {
+				Robot.mOI.liftMotor.set(-1);
+			}
+			if (Robot.mOI.mBtn9.get()) {
+				Robot.mOI.liftMotor.set(0);
+			}
+			Robot.mOI.liftMotor.set(grabberIn);
+			SmartDashboard.putNumber("[debug]Grabber In", grabberIn);
 			// ChasisDriveSubsystem.collisionMarginCM = throttle * 20;
 			// Manual control overrides auto control if necessary
 			if (!AutoAlignCommand.AUTO_ALIGNING || manualOverAuto()) {
-				if (povIn != -1) {
+				if (povIn != -1 || povIn1 != -1) {
 					Robot.mChasisDriveSubsystem.pidTurnAbsolute(yIn, xIn, povIn);
-				} else if (isJS0Active()) {
+				} else if (isJS0Active() && !Robot.mOI.mMissle.get()) {
 					Robot.mChasisDriveSubsystem.safeDriveCartesian(yIn, xIn, zIn);
+					SmartDashboard.putString("Primary Controler:", js0.getName());
 				} else {
 					Robot.mChasisDriveSubsystem.absoluteSafeDriveCartesian(yIn1, xIn1, zIn1);
+					SmartDashboard.putString("Primary Controler:", js1.getName());
 				}
 			}
 		} catch (Exception e) {
@@ -52,13 +67,11 @@ public class ManualControlCommand extends CmdGroupBase {
 			SmartDashboard.putNumber("X in", xIn);
 			SmartDashboard.putNumber("Z in", zIn);
 			SmartDashboard.putNumber("POV in", povIn);
-			SmartDashboard.putString("Primary Controler:", js0.getName());
 		} else {
 			SmartDashboard.putNumber("Y in", yIn1);
 			SmartDashboard.putNumber("X in", xIn1);
 			SmartDashboard.putNumber("Z in", zIn1);
 			SmartDashboard.putNumber("POV in", povIn1);
-			SmartDashboard.putString("Primary Controler:", js1.getName());
 		}
 		SmartDashboard.putNumber("Grabber in", grabberIn);
 		SmartDashboard.putBoolean("Manual Over Auto", manualOverAuto());

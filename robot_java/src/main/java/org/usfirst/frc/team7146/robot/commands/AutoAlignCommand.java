@@ -30,6 +30,8 @@ public class AutoAlignCommand extends CmdGroupBase {
 		super.start();
 		if (DriverStation.getInstance().isDisabled())
 			return;
+		Robot.mVisionSubsystem.mUsbCamera.setExposureManual(0);
+		VisionSubsystem.EXPLOSURE = 0;
 		VisionSubsystem.lazyness = 0;
 		VisionSubsystem.isCVUsable = false;
 		RobotMap.MOTOR.CURRENT_MODE = new RobotMap.MOTOR.AUTO();
@@ -88,6 +90,8 @@ public class AutoAlignCommand extends CmdGroupBase {
 		dataEligiable = false;
 		lastTarget = null;
 		AUTO_ALIGNING = false;
+		Robot.mVisionSubsystem.mUsbCamera.setExposureAuto();
+		VisionSubsystem.EXPLOSURE = -1;
 		writeStatus();
 		RobotMap.MOTOR.CURRENT_MODE = new RobotMap.MOTOR.NORMAL();
 		logger.warning("Auto Align End");

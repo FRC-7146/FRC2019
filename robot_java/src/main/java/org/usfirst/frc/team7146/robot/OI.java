@@ -41,6 +41,9 @@ public class OI {
 	private static final Logger logger = Logger.getLogger(OI.class.getName());
 
 	public Servo grabberServo = new Servo(RobotMap.MOTOR.GRABBER_PWN_SERVO);
+	public SpeedController liftMotor = new Spark(RobotMap.MOTOR.LIFT_MOTOR);
+	public SpeedController ballMotor = new Spark(RobotMap.MOTOR.BALL_INTAKE_MOTOR);
+	public SpeedController hatchMotor = new Spark(RobotMap.MOTOR.HATCH_INTAKE_MOTOR);
 
 	public SpeedController frontLeftMotor = new Spark(RobotMap.MOTOR.FL_MOTOR),
 			rearLeftMotor = new Spark(RobotMap.MOTOR.BL_MOTOR), frontRightMotor = new Spark(RobotMap.MOTOR.FR_MOTOR),
@@ -68,7 +71,8 @@ public class OI {
 	public Button mTrigger = new JoystickButton(mJoystick1, 1), mMissle = new JoystickButton(mJoystick1, 2),
 			mBtn3 = new JoystickButton(mJoystick1, 3), mBtn4 = new JoystickButton(mJoystick1, 4),
 			mBtn5 = new JoystickButton(mJoystick1, 5), mBtn6 = new JoystickButton(mJoystick1, 6),
-			mBtn7 = new JoystickButton(mJoystick1, 7);
+			mBtn7 = new JoystickButton(mJoystick1, 7), mBtn9 = new JoystickButton(mJoystick1, 9),
+			mBtn11 = new JoystickButton(mJoystick1, 11);
 
 	public Button autoBtn = mXboxBtnLb, precisionBtn = mXboxBtnRt, sportBtn = mXboxBtnRb, safetyBtn = mXboxBtnA;
 

@@ -25,8 +25,9 @@ public class Utils {
 		return absVecRet;
 	}
 
-	// TODO: It's actually 53 degree instead of 45
-	static final double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
+	// TODO: It's actually 60,30 degree instead of 45
+	// static final double[] allAngles = { 359, 0, 45, 90, 135, 225, 270, 315 };
+	static final double[] allAngles = { 359, 0, 30, 90, 150, 210, 270, 330 };
 
 	/**
 	 * @return The nearest angle needed for hatch panel

@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void robotInit() {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		mOI = new OI();
 		mOI.mGyro.calibrate();
 		mOI.mGyro.reset();

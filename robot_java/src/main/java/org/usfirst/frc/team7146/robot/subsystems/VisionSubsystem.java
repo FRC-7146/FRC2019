@@ -112,8 +112,8 @@ public class VisionSubsystem extends Subsystem {
     CvSink cvSink;
     CvSource cvSrcOut, cvSrcMask;
     int[] resolution = { 40, 100 };
-    Scalar LOWER_BOUND = new Scalar(40, 40, 40), UPPER_BOUND = new Scalar(90, 360, 360);
-    public static int EXPLOSURE = 0;
+    Scalar LOWER_BOUND = new Scalar(120, 120, 120), UPPER_BOUND = new Scalar(90, 360, 360);
+    public static int EXPLOSURE = -1;
 
     public static int lazynessIDLE = 2;
     public static int lazyness = lazynessIDLE;
@@ -127,7 +127,7 @@ public class VisionSubsystem extends Subsystem {
             mCameraServer = CameraServer.getInstance();
             mUsbCamera = mCameraServer.startAutomaticCapture();
             cvSink = mCameraServer.getVideo();
-            mUsbCamera.setFPS(25);
+            mUsbCamera.setFPS(10);
             mUsbCamera.setResolution(resolution[0], resolution[1]);
             if (EXPLOSURE == -1)
                 mUsbCamera.setExposureAuto();
@@ -147,9 +147,18 @@ public class VisionSubsystem extends Subsystem {
             List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
             List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
             List<RotatedRect> possibleRects = new ArrayList<>();
+            // Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
             while (!Thread.interrupted()) {
-                if (!isCVEnabled)
+                if (true) {
+                    cvSrcOut.putFrame(frame);
+                    frame.release();
                     continue;
+                }
+                if (!isCVEnabled) {
+                    cvSrcOut.putFrame(frame);
+                    Utils.release(frame);
+                    continue;
+                }
                 try {
                     if (0 == cvSink.grabFrame(frame)) {
                         logger.warning("Error grabbing fram from camera");
