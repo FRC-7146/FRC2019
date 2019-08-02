@@ -149,6 +149,12 @@ public class VisionSubsystem extends Subsystem {
             List<RotatedRect> possibleRects = new ArrayList<>();
             // Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
             while (!Thread.interrupted()) {
+                logger.warning("grab frame");
+                if (0 == cvSink.grabFrame(frame)) {
+                    logger.warning("Error grabbing fram from camera");
+                    isCVUsable = false;
+                    continue;
+                }
                 if (true) {
                     cvSrcOut.putFrame(frame);
                     frame.release();
