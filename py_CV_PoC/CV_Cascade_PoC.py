@@ -20,7 +20,7 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     # faces = face_cascade.detectMultiScale(gray, 8, 200)
-    faces = face_cascade.detectMultiScale(gray, 1.1, 1)
+    faces = face_cascade.detectMultiScale(gray, 1.8, 1)
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
         print('{},{}'.format(w,h))
